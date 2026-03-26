@@ -322,8 +322,8 @@ body.panel-open #mainContent,body.panel-open footer{margin-right:380px;transitio
 }
 .sp-close:hover{background:var(--surface);color:var(--text)}
 .sp-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
-.sp-pane{flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden}
-.sp-pane.active{display:flex}
+.sp-pane{flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden;max-height:calc(100vh - 80px)}
+.sp-pane.active,.sp-pane[style*="flex"]{display:flex !important}
 /* Editor pane */
 .sp-editor-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
 .sp-editor-inner{display:flex;flex:1;min-height:0;gap:0}
@@ -355,19 +355,29 @@ body.panel-open #mainContent,body.panel-open footer{margin-right:380px;transitio
   background:var(--code-bg);color:var(--text);font-family:'JetBrains Mono',monospace;
   font-size:12.5px;line-height:1.6;padding:12px;overflow-y:auto;
 }
-/* md-preview inside side panel */
-#spEditorPreview h1,#spEditorPreview h2,#spEditorPreview h3{
-  color:var(--text);margin:.5em 0 .3em;font-size:1em;border:none;padding:0;
-}
-#spEditorPreview h1{font-size:1.15em}
-#spEditorPreview h2{font-size:1.05em}
-#spEditorPreview code{background:var(--surface2);padding:1px 4px;border-radius:3px;font-size:.9em}
-#spEditorPreview pre{background:var(--code-bg);padding:8px;border-radius:4px;overflow-x:auto;font-size:.85em}
-#spEditorPreview table{border-collapse:collapse;width:100%;font-size:.85em}
-#spEditorPreview th,#spEditorPreview td{border:1px solid var(--border);padding:4px 8px}
-#spEditorPreview th{background:var(--surface2)}
-#spEditorPreview blockquote{border-left:3px solid var(--accent);padding-left:8px;color:var(--text2);margin:4px 0}
-#spEditorPreview a{color:var(--accent)}
+/* md-preview inside side panel — full styles */
+#spEditorPreview{font-size:13px;line-height:1.75;color:var(--text)}
+#spEditorPreview h1{font-size:1.5em;font-weight:700;margin:0 0 .5em;padding-bottom:5px;border-bottom:1px solid var(--border);color:var(--text)}
+#spEditorPreview h2{font-size:1.2em;font-weight:700;margin:.9em 0 .35em;color:var(--text)}
+#spEditorPreview h3{font-size:1.05em;font-weight:600;margin:.7em 0 .25em;color:var(--text)}
+#spEditorPreview p{margin:0 0 .65em;color:var(--text)}
+#spEditorPreview ul,#spEditorPreview ol{padding-left:22px;margin:0 0 .6em}
+#spEditorPreview li{margin-bottom:3px}
+#spEditorPreview strong{font-weight:700}
+#spEditorPreview em{font-style:italic}
+#spEditorPreview del{text-decoration:line-through;opacity:.65}
+#spEditorPreview code{background:var(--surface2);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent)}
+#spEditorPreview pre{background:var(--code-bg);border:1px solid var(--border);padding:10px;border-radius:4px;overflow-x:auto;margin:.5em 0}
+#spEditorPreview pre code{background:none;color:var(--text);padding:0;font-size:.85em}
+#spEditorPreview table{border-collapse:collapse;width:100%;font-size:.85em;margin:.5em 0}
+#spEditorPreview th,#spEditorPreview td{border:1px solid var(--border);padding:5px 10px}
+#spEditorPreview th{background:var(--surface2);font-weight:600;color:var(--accent)}
+#spEditorPreview blockquote{border-left:3px solid var(--accent);padding:2px 12px;margin:.5em 0;color:var(--text2);font-style:italic}
+#spEditorPreview hr{border:none;border-top:1px solid var(--border);margin:.8em 0}
+#spEditorPreview a{color:var(--accent);text-decoration:none}
+/* Python output in side panel */
+#spPyOutput{border-top:1px solid var(--border);padding:8px 12px;display:none;font-size:12px}
+#spPyOutput .py-stdout,#spPyOutput .py-stderr,#spPyOutput .py-ok,#spPyOutput .py-loading{font-size:12px}
 @media(max-width:900px){
   #sidePanel{width:100vw}
   body.panel-open #sidePanelToggle{right:100vw}
@@ -1755,8 +1765,12 @@ async function getPyodide() {
   }
   _pyodide = await loadPyodide();
   await _pyodide.loadPackage(['pandas','numpy']);
-  // shared namespace across all cells (like a kernel)
-  await _pyodide.runPythonAsync('_G = {}');
+  // shared namespace with common imports pre-loaded (like a Colab kernel)
+  await _pyodide.runPythonAsync(`
+import pandas as pd
+import numpy as np
+_G = {'pd': pd, 'np': np}
+`);
   _pyLoading = false;
   _pyQueue.forEach(r => r(_pyodide)); _pyQueue = [];
   return _pyodide;
@@ -1828,11 +1842,18 @@ document.addEventListener('DOMContentLoaded', () => {
     pre.spellcheck = false;
     pre.dataset.orig = pre.innerHTML;
 
-    // Strip HTML on paste
+    // Strip HTML on paste — keep plain text only
     pre.addEventListener('paste', e => {
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData).getData('text/plain');
       document.execCommand('insertText', false, text);
+    });
+    // Enter inserts real newline, not <div>/<br>
+    pre.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.execCommand('insertText', false, '\n');
+      }
     });
 
     // Live preview for markdown split cards
@@ -1893,21 +1914,31 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderMdEditor() {
   const input = document.getElementById('mdEditorInput');
   const preview = document.getElementById('mdEditorPreview');
-  if (!input || !preview || typeof marked === 'undefined') return;
-  preview.innerHTML = marked.parse(input.value);
+  if (!input || !preview) return;
+  if (typeof marked === 'undefined') {
+    // marked not loaded yet — retry shortly
+    setTimeout(renderMdEditor, 300);
+    return;
+  }
+  try { preview.innerHTML = marked.parse(input.value || ''); } catch(e) {}
   if (window.MathJax) MathJax.typesetPromise([preview]).catch(() => {});
 }
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('mdEditorInput');
-  if (input) {
-    renderMdEditor();
-    let debounce;
-    input.addEventListener('input', () => {
-      clearTimeout(debounce);
-      debounce = setTimeout(renderMdEditor, 120);
-    });
-  }
+  if (!input) return;
+  renderMdEditor();
+  let debounce;
+  input.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(renderMdEditor, 100);
+  });
+  input.addEventListener('keyup', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(renderMdEditor, 100);
+  });
 });
+// Fallback: also render on window load (in case DOMContentLoaded fired early)
+window.addEventListener('load', renderMdEditor);
 
 // Live code value update — flashes the changed span so it's obvious
 function cvUpdate(id, val) {
@@ -1974,6 +2005,7 @@ navLinks.forEach(link => {
     <span>Panel de Pruebas</span>
     <div class="sp-tabs">
       <button class="sp-tab active" data-pane="editor">Markdown</button>
+      <button class="sp-tab" data-pane="python">Python</button>
       <button class="sp-tab" data-pane="notes">Notas</button>
     </div>
     <button class="sp-close" id="spClose" title="Cerrar panel">
@@ -1984,90 +2016,124 @@ navLinks.forEach(link => {
     <!-- Markdown editor pane -->
     <div class="sp-pane active" id="sp-pane-editor">
       <div class="sp-editor-bar">
-        <span>Editor &nbsp;|&nbsp; Vista previa</span>
+        <span>Editor &nbsp;|&nbsp; Preview</span>
         <button id="spClear">Limpiar</button>
       </div>
       <div class="sp-editor-wrap">
         <div class="sp-editor-inner">
-          <textarea id="spEditorInput" placeholder="Escribe Markdown aqui...
-# Titulo
-**negrita**, *cursiva*
-$y = x^2$
-- item 1
-- item 2"></textarea>
+          <textarea id="spEditorInput" placeholder="# Titulo&#10;**negrita**, *cursiva*&#10;$y = x^2$&#10;- item 1"></textarea>
           <div id="spEditorPreview"></div>
         </div>
       </div>
     </div>
+    <!-- Python pane -->
+    <div class="sp-pane" id="sp-pane-python" style="display:none;flex-direction:column">
+      <div class="sp-editor-bar">
+        <span>Python · pd y np disponibles</span>
+        <div style="display:flex;gap:6px">
+          <button id="spPyRun" class="run-btn" style="padding:2px 10px;font-size:11px">▶ Run</button>
+          <button id="spPyClear" style="background:none;border:1px solid var(--border);border-radius:4px;color:var(--text2);font-size:11px;font-family:inherit;padding:2px 8px;cursor:pointer">Limpiar</button>
+        </div>
+      </div>
+      <textarea id="spPyInput" style="flex:1;min-height:0;resize:none;border:none;outline:none;background:var(--code-bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;padding:12px;overflow-y:auto" placeholder="import pandas as pd&#10;s = pd.Series([10, 20, 30])&#10;s" spellcheck="false"></textarea>
+      <div id="spPyOutput" class="code-output"></div>
+    </div>
     <!-- Notes pane -->
-    <div class="sp-pane" id="sp-pane-notes">
-      <textarea id="spNotes" placeholder="Notas libres... (se guardan automaticamente)"></textarea>
+    <div class="sp-pane" id="sp-pane-notes" style="display:none">
+      <textarea id="spNotes" placeholder="Notas libres... (se guardan automaticamente)" style="flex:1;min-height:0;resize:none;border:none;outline:none;background:var(--code-bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;padding:12px;overflow-y:auto"></textarea>
     </div>
   </div>
 </div>
 
 <script>
-// ── Side Panel (must run after panel HTML is in DOM) ──
+// ── Side Panel (runs after panel HTML is in DOM) ──
 (function(){
-  const panel = document.getElementById('sidePanel');
-  const toggle = document.getElementById('sidePanelToggle');
-  const closeBtn = document.getElementById('spClose');
-  const tabs = document.querySelectorAll('.sp-tab');
-  const panes = document.querySelectorAll('.sp-pane');
-  const editorInput = document.getElementById('spEditorInput');
-  const editorPreview = document.getElementById('spEditorPreview');
-  const notesArea = document.getElementById('spNotes');
-  const clearBtn = document.getElementById('spClear');
+  const panel      = document.getElementById('sidePanel');
+  const toggle     = document.getElementById('sidePanelToggle');
+  const closeBtn   = document.getElementById('spClose');
+  const tabs       = document.querySelectorAll('.sp-tab');
+  const panes      = document.querySelectorAll('.sp-pane');
+  const mdInput    = document.getElementById('spEditorInput');
+  const mdPreview  = document.getElementById('spEditorPreview');
+  const notesArea  = document.getElementById('spNotes');
+  const mdClear    = document.getElementById('spClear');
+  const pyInput    = document.getElementById('spPyInput');
+  const pyOutput   = document.getElementById('spPyOutput');
+  const pyRun      = document.getElementById('spPyRun');
+  const pyClear    = document.getElementById('spPyClear');
 
+  // Restore saved content
   const savedMd = localStorage.getItem('sp_md');
   const savedNotes = localStorage.getItem('sp_notes');
-  if (savedMd !== null) editorInput.value = savedMd;
+  const savedPy = localStorage.getItem('sp_py');
+  if (savedMd    !== null) mdInput.value   = savedMd;
   if (savedNotes !== null) notesArea.value = savedNotes;
+  if (savedPy    !== null) pyInput.value   = savedPy;
 
-  function renderSpEditor() {
-    if (typeof marked === 'undefined') return;
-    editorPreview.innerHTML = marked.parse(editorInput.value);
-    if (window.MathJax) MathJax.typesetPromise([editorPreview]).catch(()=>{});
+  // Markdown render
+  function renderSpMd() {
+    if (typeof marked === 'undefined') { mdPreview.innerHTML = '<i style="color:var(--text2)">marked.js no cargó aún…</i>'; return; }
+    try { mdPreview.innerHTML = marked.parse(mdInput.value || ''); } catch(e) {}
+    if (window.MathJax) MathJax.typesetPromise([mdPreview]).catch(()=>{});
   }
+
+  // Open / close
   function openPanel() {
     panel.classList.add('open');
     document.body.classList.add('panel-open');
-    renderSpEditor();
+    renderSpMd();
   }
   function closePanel() {
     panel.classList.remove('open');
     document.body.classList.remove('panel-open');
   }
-
-  toggle.addEventListener('click', () => {
-    panel.classList.contains('open') ? closePanel() : openPanel();
-  });
+  toggle.addEventListener('click', () => panel.classList.contains('open') ? closePanel() : openPanel());
   closeBtn.addEventListener('click', closePanel);
 
+  // Tab switching — show/hide with display flex/none
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       tabs.forEach(t => t.classList.remove('active'));
-      panes.forEach(p => p.classList.remove('active'));
+      panes.forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
       tab.classList.add('active');
-      document.getElementById('sp-pane-' + tab.dataset.pane).classList.add('active');
+      const pane = document.getElementById('sp-pane-' + tab.dataset.pane);
+      if (pane) { pane.style.display = 'flex'; pane.classList.add('active'); }
     });
   });
 
-  let spDebounce;
-  editorInput.addEventListener('input', () => {
-    clearTimeout(spDebounce);
-    spDebounce = setTimeout(() => {
-      renderSpEditor();
-      localStorage.setItem('sp_md', editorInput.value);
-    }, 100);
+  // Markdown live preview
+  let spMdDebounce;
+  mdInput.addEventListener('input', () => {
+    clearTimeout(spMdDebounce);
+    spMdDebounce = setTimeout(() => { renderSpMd(); localStorage.setItem('sp_md', mdInput.value); }, 80);
   });
-  notesArea.addEventListener('input', () => {
-    localStorage.setItem('sp_notes', notesArea.value);
+  mdClear.addEventListener('click', () => { mdInput.value=''; mdPreview.innerHTML=''; localStorage.removeItem('sp_md'); });
+
+  // Notes autosave
+  notesArea.addEventListener('input', () => localStorage.setItem('sp_notes', notesArea.value));
+  pyInput.addEventListener('input', () => localStorage.setItem('sp_py', pyInput.value));
+
+  // Python run in panel
+  pyRun.addEventListener('click', async () => {
+    const code = pyInput.value;
+    if (!code.trim()) return;
+    pyOutput.style.display = 'block';
+    pyOutput.innerHTML = '<span class="py-loading">Iniciando Python…</span>';
+    pyRun.disabled = true;
+    try {
+      await runPyCode({ innerText: code }, pyOutput, pyRun);
+    } finally {
+      pyRun.disabled = false;
+      pyRun.innerHTML = '▶ Run';
+    }
   });
-  clearBtn.addEventListener('click', () => {
-    editorInput.value = '';
-    editorPreview.innerHTML = '';
-    localStorage.removeItem('sp_md');
+  // Allow Shift+Enter to run
+  pyInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); pyRun.click(); }
+  });
+  pyClear.addEventListener('click', () => {
+    pyInput.value=''; pyOutput.style.display='none'; pyOutput.innerHTML='';
+    localStorage.removeItem('sp_py');
   });
 })();
 </script>
