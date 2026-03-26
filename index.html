@@ -16,28 +16,28 @@
 
 /* ── DARK THEME (default) ── */
 :root,[data-theme="dark"]{
-  --bg:#100e1f;--surface:#1a1730;--surface2:#221f3a;--border:#332f56;
-  --text:#ede9fe;--text2:#9d93c8;--accent:#a78bfa;--accent2:#7c3aed;
-  --green:#34d399;--orange:#fb923c;--red:#f87171;--purple:#e879f9;
-  --radius:8px;--code-bg:#0c0a1a;
-  --header-bg:rgba(16,14,31,.88);
-  --note-bg:rgba(167,139,250,.1);--warn-bg:rgba(248,113,113,.08);
-  --accent-dim:rgba(167,139,250,.12);--accent-glow:rgba(167,139,250,.22);
-  --hover-row:rgba(167,139,250,.04);
-  --kw:#f472b6;--str:#86efac;--num:#93c5fd;--cm:#9d93c8;--fn:#c4b5fd;--op:#f472b6;--bi:#fdba74;
+  --bg:#111111;--surface:#1a1a1a;--surface2:#222222;--border:#303030;
+  --text:#e8e8e8;--text2:#888888;--accent:#4e9eff;--accent2:#2563eb;
+  --green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#c084fc;
+  --radius:8px;--code-bg:#0d0d0d;--colab-panel-bg:#1e1e1e;
+  --header-bg:rgba(17,17,17,.93);
+  --note-bg:rgba(78,158,255,.08);--warn-bg:rgba(248,113,113,.08);
+  --accent-dim:rgba(78,158,255,.1);--accent-glow:rgba(78,158,255,.2);
+  --hover-row:rgba(255,255,255,.025);
+  --kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--cm:#666666;--fn:#d2a8ff;--op:#ff7b72;--bi:#ffa657;
 }
 
 /* ── LIGHT THEME ── */
 [data-theme="light"]{
-  --bg:#fbfaff;--surface:#ffffff;--surface2:#f5f0ff;--border:#e5deff;
-  --text:#1e1b4b;--text2:#6b5f8e;--accent:#7c3aed;--accent2:#6d28d9;
-  --green:#059669;--orange:#d97706;--red:#dc2626;--purple:#9333ea;
-  --radius:8px;--code-bg:#f3efff;
-  --header-bg:rgba(251,250,255,.92);
-  --note-bg:rgba(124,58,237,.07);--warn-bg:rgba(220,38,38,.06);
-  --accent-dim:rgba(124,58,237,.08);--accent-glow:rgba(124,58,237,.18);
-  --hover-row:rgba(124,58,237,.03);
-  --kw:#be185d;--str:#15803d;--num:#1d4ed8;--cm:#6b5f8e;--fn:#7c3aed;--op:#be185d;--bi:#c2410c;
+  --bg:#f8f8f8;--surface:#ffffff;--surface2:#f2f2f2;--border:#e0e0e0;
+  --text:#111111;--text2:#666666;--accent:#2563eb;--accent2:#1d4ed8;
+  --green:#16a34a;--orange:#d97706;--red:#dc2626;--purple:#9333ea;
+  --radius:8px;--code-bg:#f4f4f4;--colab-panel-bg:#f7f7f7;
+  --header-bg:rgba(248,248,248,.94);
+  --note-bg:rgba(37,99,235,.07);--warn-bg:rgba(220,38,38,.06);
+  --accent-dim:rgba(37,99,235,.08);--accent-glow:rgba(37,99,235,.16);
+  --hover-row:rgba(0,0,0,.025);
+  --kw:#d63a3a;--str:#1a7a3a;--num:#1d4ed8;--cm:#888888;--fn:#7c3aed;--op:#d63a3a;--bi:#b45309;
 }
 
 html{scroll-behavior:smooth;scroll-padding-top:80px}
@@ -170,6 +170,41 @@ footer a{color:var(--accent);text-decoration:none}
 
 /* Syntax highlighting — respects theme via CSS vars */
 .kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.cm{color:var(--cm);font-style:italic}.fn{color:var(--fn)}.op{color:var(--op)}.bi{color:var(--bi)}
+
+/* ── Colab-style split layout (Forms section) ── */
+.colab-card{padding:0;overflow:hidden}
+.colab-card>h3{padding:20px 24px 0;margin-bottom:0}
+.colab-layout{display:flex;align-items:stretch;border-top:1px solid var(--border);margin-top:14px}
+.colab-code{flex:0 0 55%;min-width:0;border-right:1px solid var(--border)}
+.colab-code .code-wrap{margin:0;border:none;border-radius:0;border-bottom:none}
+.colab-code .code-wrap pre{border-radius:0}
+.colab-panel{flex:1;background:var(--colab-panel-bg);padding:16px 18px;display:flex;flex-direction:column;min-width:0;transition:background .25s}
+.colab-panel-title{font-size:.7rem;font-weight:600;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.form-field{margin-bottom:13px}
+.form-field:last-of-type{margin-bottom:0}
+.form-label{font-size:.78rem;font-weight:500;color:var(--text2);margin-bottom:5px;display:block;font-family:'JetBrains Mono',monospace}
+.form-input,.form-select{width:100%;padding:5px 9px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.83rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus{border-color:var(--accent)}
+.form-input[type="date"]{color-scheme:dark}
+[data-theme="light"] .form-input[type="date"]{color-scheme:light}
+.form-checkbox-wrap{display:flex;align-items:center;gap:8px;padding:4px 0}
+.form-checkbox{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.form-range-wrap{display:flex;align-items:center;gap:10px}
+.form-range{flex:1;accent-color:var(--accent);cursor:pointer;height:4px}
+.form-range-val{font-size:.82rem;font-family:'JetBrains Mono',monospace;color:var(--accent);min-width:36px;text-align:right;font-weight:600}
+.hide-code-btn{margin-top:14px;align-self:flex-start;background:none;border:1px solid var(--border);color:var(--text2);padding:4px 11px;border-radius:4px;cursor:pointer;font-size:.73rem;font-family:'Inter',sans-serif;transition:all .2s}
+.hide-code-btn:hover{border-color:var(--accent);color:var(--accent)}
+.colab-code.code-hidden{display:none}
+.md-preview{font-size:.875rem;line-height:1.7;flex:1}
+.md-preview h2{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.md-preview h3{font-size:.875rem;font-weight:600;color:var(--text);margin:10px 0 6px}
+.md-preview p{color:var(--text2);margin-bottom:6px;font-size:.83rem}
+.md-preview hr{border:none;border-top:1px solid var(--border);margin:10px 0}
+@media(max-width:700px){
+  .colab-layout{flex-direction:column}
+  .colab-code{flex:none;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+  .colab-panel{flex:none;width:100%}
+}
 </style>
 </head>
 <body>
@@ -365,7 +400,7 @@ $\frac{n!}{k!(n-k)!} = {n \choose k}$</pre>
 <!-- ==================== SECCION 2: FORMS ==================== -->
 <section class="section visible" id="sec-forms">
 <h2 class="section-title"><span class="badge">Clase 1</span> Forms en Google Colab</h2>
-<p class="section-desc">Controles visuales interactivos para parametrizar codigo.</p>
+<p class="section-desc">Controles visuales interactivos para parametrizar codigo. Codigo a la izquierda, control real a la derecha — igual que en Colab.</p>
 
 <div class="card">
 <h3>¿Que son los Forms?</h3>
@@ -373,89 +408,244 @@ $\frac{n!}{k!(n-k)!} = {n \choose k}$</pre>
 <div class="note">Sintaxis general: <code>variable = valor_default  # @param {type:"tipo"}</code></div>
 </div>
 
-<div class="card">
+<!-- STRING FIELDS -->
+<div class="card colab-card">
 <h3>Tipo: String</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title String fields</span>
+<div class="colab-layout">
+  <div class="colab-code" id="code-string">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title String fields</span>
 
 text = <span class="str">''</span>  <span class="cm"># @param {type:"string"}</span>
 dropdown = <span class="str">'1st option'</span>  <span class="cm"># @param ["1st option", "2nd option", "3rd option"]</span>
-text_and_dropdown = <span class="str">'value'</span>  <span class="cm"># @param ["1st option", "2nd option"] {allow-input: true}</span>
-<span class="cm"># allow-input: true → permite escribir valor personalizado ademas de elegir</span></pre>
+text_and_dropdown = <span class="str">'value'</span>  <span class="cm"># @param ["1st option", "2nd option"] {allow-input: true}</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">String fields</div>
+    <div class="form-field">
+      <label class="form-label">text</label>
+      <input class="form-input" type="text" placeholder="Insertar text aqui">
+    </div>
+    <div class="form-field">
+      <label class="form-label">dropdown</label>
+      <select class="form-select">
+        <option>1st option</option>
+        <option>2nd option</option>
+        <option>3rd option</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label class="form-label">text_and_dropdown <span style="color:var(--accent);font-size:.7rem">{allow-input: true}</span></label>
+      <input class="form-input" list="text-dd-list" placeholder="1st option">
+      <datalist id="text-dd-list">
+        <option value="1st option">
+        <option value="2nd option">
+      </datalist>
+    </div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-string', this)">Ocultar codigo</button>
+  </div>
 </div>
 </div>
 
-<div class="card">
+<!-- NUMBER FIELDS -->
+<div class="card colab-card">
 <h3>Tipo: Number</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title Number fields</span>
+<div class="colab-layout">
+  <div class="colab-code" id="code-number">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title Number fields</span>
 
 number_input = <span class="num">10.0</span>   <span class="cm"># @param {type:"number"}</span>
 number_slider = <span class="num">0.2</span>   <span class="cm"># @param {type:"slider", min:-1, max:1, step:0.1}</span>
 integer_input = <span class="num">10</span>    <span class="cm"># @param {type:"integer"}</span>
 integer_slider = <span class="num">52</span>   <span class="cm"># @param {type:"slider", min:0, max:100, step:1}</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">Number fields</div>
+    <div class="form-field">
+      <label class="form-label">number_input</label>
+      <input class="form-input" type="number" value="10.0" step="any">
+    </div>
+    <div class="form-field">
+      <label class="form-label">number_slider <span style="color:var(--text2);font-size:.7rem">min:-1  max:1  step:0.1</span></label>
+      <div class="form-range-wrap">
+        <input class="form-range" type="range" min="-1" max="1" step="0.1" value="0.2" oninput="document.getElementById('ns-val').textContent=parseFloat(this.value).toFixed(1)">
+        <span class="form-range-val" id="ns-val">0.2</span>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">integer_input</label>
+      <input class="form-input" type="number" value="10" step="1">
+    </div>
+    <div class="form-field">
+      <label class="form-label">integer_slider <span style="color:var(--text2);font-size:.7rem">min:0  max:100  step:1</span></label>
+      <div class="form-range-wrap">
+        <input class="form-range" type="range" min="0" max="100" step="1" value="52" oninput="document.getElementById('is-val').textContent=this.value">
+        <span class="form-range-val" id="is-val">52</span>
+      </div>
+    </div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-number', this)">Ocultar codigo</button>
+  </div>
 </div>
 </div>
 
-<div class="card">
+<!-- DATE FIELDS -->
+<div class="card colab-card">
 <h3>Tipo: Date</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title Date fields</span>
+<div class="colab-layout">
+  <div class="colab-code" id="code-date">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title Date fields</span>
 
 date_input = <span class="str">'2018-02-21'</span>  <span class="cm"># @param {type:"date"}</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">Date fields</div>
+    <div class="form-field">
+      <label class="form-label">date_input</label>
+      <input class="form-input" type="date" value="2018-02-21">
+    </div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-date', this)">Ocultar codigo</button>
+  </div>
 </div>
 </div>
 
-<div class="card">
+<!-- BOOLEAN FIELDS -->
+<div class="card colab-card">
 <h3>Tipo: Boolean</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title Boolean fields</span>
+<div class="colab-layout">
+  <div class="colab-code" id="code-bool">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title Boolean fields</span>
 
 boolean_checkbox = <span class="kw">True</span>   <span class="cm"># @param {type:"boolean"}</span>
 boolean_dropdown = <span class="kw">True</span>   <span class="cm"># @param ["False", "True"] {type:"raw"}</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">Boolean fields</div>
+    <div class="form-field">
+      <label class="form-label">boolean_checkbox</label>
+      <div class="form-checkbox-wrap">
+        <input class="form-checkbox" type="checkbox" id="bool-check" checked>
+        <label for="bool-check" style="font-size:.83rem;color:var(--text);cursor:pointer">boolean_checkbox</label>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">boolean_dropdown</label>
+      <select class="form-select">
+        <option>False</option>
+        <option selected>True</option>
+      </select>
+    </div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-bool', this)">Ocultar codigo</button>
+  </div>
 </div>
 </div>
 
-<div class="card">
-<h3>Tipo: Raw (cualquier expresion Python)</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title Raw fields</span>
+<!-- RAW FIELDS -->
+<div class="card colab-card">
+<h3>Tipo: Raw</h3>
+<div class="colab-layout">
+  <div class="colab-code" id="code-raw">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title Raw fields</span>
 
 raw_input = <span class="kw">None</span>      <span class="cm"># @param {type:"raw"}</span>
 raw_dropdown = <span class="kw">None</span>   <span class="cm"># @param [1, "raw_input", "False", "'string'"] {type:"raw"}</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">Raw fields</div>
+    <div class="form-field">
+      <label class="form-label">raw_input</label>
+      <input class="form-input" type="text" value="None">
+    </div>
+    <div class="form-field">
+      <label class="form-label">raw_dropdown</label>
+      <select class="form-select">
+        <option>1</option>
+        <option>raw_input</option>
+        <option>False</option>
+        <option>'string'</option>
+      </select>
+    </div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-raw', this)">Ocultar codigo</button>
+  </div>
 </div>
 </div>
 
-<div class="card">
+<!-- MARKDOWN FORM -->
+<div class="card colab-card">
 <h3>Markdown dentro de un Form</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title ## Titulo con Markdown</span>
+<div class="colab-layout">
+  <div class="colab-code" id="code-md">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title ## Titulo con Markdown</span>
 <span class="cm"># @markdown Puedes escribir texto Markdown aqui.</span>
 <span class="cm"># @markdown ---</span>
 <span class="cm"># @markdown ### Ingresa un valor:</span>
 file_path = <span class="str">""</span>  <span class="cm"># @param {type:"string"}</span>
 <span class="cm"># @markdown ---</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">Vista previa del form</div>
+    <div class="md-preview">
+      <h2>Titulo con Markdown</h2>
+      <p>Puedes escribir texto Markdown aqui.</p>
+      <hr>
+      <h3>Ingresa un valor:</h3>
+      <div class="form-field">
+        <label class="form-label">file_path</label>
+        <input class="form-input" type="text" placeholder="">
+      </div>
+      <hr>
+    </div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-md', this)">Ocultar codigo</button>
+  </div>
 </div>
 </div>
 
-<div class="card">
-<h3>Ejecucion automatica y ocultar codigo</h3>
-<div class="code-wrap">
-<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre><span class="cm"># @title { run: "auto" }</span>
+<!-- EJECUCION AUTOMATICA -->
+<div class="card colab-card">
+<h3>Ejecucion automatica — run: "auto"</h3>
+<div class="colab-layout">
+  <div class="colab-code" id="code-auto">
+    <div class="code-wrap">
+      <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre><span class="cm"># @title { run: "auto" }</span>
 option = <span class="str">"B"</span>  <span class="cm"># @param ["A", "B", "C"]</span>
 <span class="fn">print</span>(<span class="str">'You selected'</span>, option)
-<span class="cm"># Se ejecuta automaticamente cada vez que cambias la seleccion</span></pre>
+<span class="cm"># Se ejecuta automaticamente al cambiar la seleccion</span></pre>
+    </div>
+  </div>
+  <div class="colab-panel">
+    <div class="colab-panel-title">{ run: "auto" }</div>
+    <div class="form-field">
+      <label class="form-label">option</label>
+      <select class="form-select" onchange="document.getElementById('auto-output').textContent='You selected ' + this.value">
+        <option>A</option>
+        <option selected>B</option>
+        <option>C</option>
+      </select>
+    </div>
+    <div style="margin-top:10px;padding:8px 10px;background:var(--code-bg);border:1px solid var(--border);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green)" id="auto-output">You selected B</div>
+    <button class="hide-code-btn" onclick="toggleColabCode('code-auto', this)">Ocultar codigo</button>
+  </div>
 </div>
-<div class="note"><strong>Ocultar codigo:</strong> View → Show/hide code. Tambien desde el toolbar sobre la celda. Puedes ver: solo el form, solo el codigo, o ambos.</div>
 </div>
 
+<!-- JUPYTER WIDGETS -->
 <div class="card">
 <h3>Jupyter Widgets (interactividad avanzada)</h3>
 <div class="code-wrap">
@@ -1213,6 +1403,13 @@ searchInput.addEventListener('input', function() {
     sec.classList.toggle('visible', hasVisible);
   });
 });
+
+// Colab-style hide/show code toggle
+function toggleColabCode(codeId, btn) {
+  const codeEl = document.getElementById(codeId);
+  const hidden = codeEl.classList.toggle('code-hidden');
+  btn.textContent = hidden ? 'Mostrar codigo' : 'Ocultar codigo';
+}
 
 // Theme toggle
 const themeToggle = document.getElementById('themeToggle');
