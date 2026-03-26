@@ -11,6 +11,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -168,6 +176,48 @@ footer a{color:var(--accent);text-decoration:none}
   th,td{padding:8px 10px}
 }
 
+/* ── Rendered Markdown styles ── */
+.md-rendered{font-size:.9rem;line-height:1.75;color:var(--text)}
+.md-rendered h1{font-size:1.4rem;font-weight:700;margin:0 0 8px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:5px}
+.md-rendered h2{font-size:1.15rem;font-weight:700;margin:14px 0 6px;color:var(--text)}
+.md-rendered h3{font-size:1rem;font-weight:600;margin:10px 0 4px;color:var(--text)}
+.md-rendered p{margin:0 0 8px}
+.md-rendered ul,.md-rendered ol{padding-left:22px;margin:4px 0 8px}
+.md-rendered li{margin-bottom:3px}
+.md-rendered blockquote{border-left:3px solid var(--border);padding:2px 12px;margin:6px 0;color:var(--text2);font-style:italic}
+.md-rendered code{background:var(--accent-dim);color:var(--accent);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.82em}
+.md-rendered pre{background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:10px 14px;margin:8px 0;overflow-x:auto}
+.md-rendered pre code{background:none;color:var(--text);padding:0;font-size:.82rem}
+.md-rendered table{width:100%;border-collapse:collapse;font-size:.85rem;margin:8px 0}
+.md-rendered th{background:var(--surface2);padding:7px 10px;text-align:left;font-weight:600;border:1px solid var(--border)}
+.md-rendered td{padding:7px 10px;border:1px solid var(--border)}
+.md-rendered hr{border:none;border-top:2px solid var(--border);margin:14px 0}
+.md-rendered a{color:var(--accent);text-decoration:none}
+.md-rendered a:hover{text-decoration:underline}
+.md-rendered strong{font-weight:700}
+.md-rendered em{font-style:italic}
+.md-rendered del{text-decoration:line-through;opacity:.65}
+
+/* Live Markdown editor */
+.md-editor-wrap{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:12px}
+.md-editor-pane{flex:1;display:flex;flex-direction:column;min-width:0}
+.md-editor-pane+.md-editor-pane{border-left:1px solid var(--border)}
+.md-editor-label{padding:7px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.md-editor-textarea{flex:1;width:100%;padding:14px;background:var(--code-bg);color:var(--text);border:none;outline:none;resize:none;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.65;min-height:220px;transition:background .25s}
+.md-preview-live{flex:1;padding:16px;background:var(--colab-panel-bg);overflow-y:auto;min-height:220px;transition:background .25s}
+
+/* Markdown split cards */
+.md-split{display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:12px}
+.md-split-code{flex:0 0 50%;min-width:0;border-right:1px solid var(--border)}
+.md-split-code .code-wrap{margin:0;border:none;border-radius:0}
+.md-split-preview{flex:1;background:var(--colab-panel-bg);padding:16px;display:flex;flex-direction:column;justify-content:center;min-width:0;transition:background .25s}
+.md-split-label{font-size:.7rem;font-weight:600;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;font-family:'JetBrains Mono',monospace}
+@media(max-width:700px){
+  .md-editor-wrap,.md-split{flex-direction:column}
+  .md-editor-pane+.md-editor-pane,.md-split-code{border-left:none;border-top:1px solid var(--border)}
+  .md-split-code{flex:none;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+}
+
 /* Syntax highlighting — respects theme via CSS vars */
 .kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.cm{color:var(--cm);font-style:italic}.fn{color:var(--fn)}.op{color:var(--op)}.bi{color:var(--bi)}
 
@@ -302,96 +352,249 @@ footer a{color:var(--accent);text-decoration:none}
 <!-- ==================== SECCION 1: MARKDOWN ==================== -->
 <section class="section visible" id="sec-markdown">
 <h2 class="section-title"><span class="badge">Clase 1</span> Markdown en Google Colab</h2>
-<p class="section-desc">Lenguaje de formato ligero para celdas de texto en Colab.</p>
+<p class="section-desc">Cada tarjeta muestra el codigo Markdown a la izquierda y como se ve renderizado a la derecha — igual que en Colab.</p>
 
+<!-- EDITOR EN VIVO -->
+<div class="card">
+<h3>Editor en vivo — escribe Markdown y ve el resultado</h3>
+<p style="font-size:.85rem;color:var(--text2);margin-bottom:0">Escribe cualquier Markdown en el panel izquierdo y ve el resultado renderizado en tiempo real. Prueba todo lo de esta seccion aqui.</p>
+<div class="md-editor-wrap">
+  <div class="md-editor-pane">
+    <div class="md-editor-label">✏ Markdown (edita aqui)</div>
+    <textarea class="md-editor-textarea" id="mdEditorInput" spellcheck="false">## Titulo con Markdown
+
+Esto es un **parrafo** con texto en *cursiva* y `codigo inline`.
+
+### Lista de ejemplo
+1. Primer item
+1. Segundo item
+1. Tercer item
+
+---
+
+| Columna 1 | Columna 2 |
+|-----------|-----------|
+| Valor A   | Valor B   |
+| Valor C   | Valor D   |
+
+> Una cita o nota de indentacion
+
+```python
+import pandas as pd
+df = pd.read_csv("datos.csv")
+df.head()
+```</textarea>
+  </div>
+  <div class="md-editor-pane">
+    <div class="md-editor-label">👁 Resultado renderizado</div>
+    <div class="md-preview-live md-rendered" id="mdEditorPreview"></div>
+  </div>
+</div>
+</div>
+
+<!-- FORMATO DE TEXTO -->
 <div class="card">
 <h3>Formato de texto</h3>
-<div class="table-wrap"><table>
-<tr><th>Sintaxis</th><th>Resultado</th></tr>
-<tr><td><code>**texto**</code></td><td><strong>negrita</strong></td></tr>
-<tr><td><code>*texto*</code> o <code>_texto_</code></td><td><em>cursiva</em></td></tr>
-<tr><td><code>`codigo`</code></td><td><code>monoespaciado</code></td></tr>
-<tr><td><code>~~texto~~</code></td><td><s>tachado</s></td></tr>
-<tr><td><code>[link](https://url.com)</code></td><td>hipervínculo</td></tr>
-<tr><td><code>![imagen](url)</code></td><td>imagen embebida</td></tr>
-</table></div>
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre>**texto en negrita**
+*texto en cursiva*
+_tambien cursiva_
+`codigo monoespaciado`
+~~texto tachado~~
+[un link](https://colab.google)
+![imagen](url-de-imagen)</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered">
+      <p><strong>texto en negrita</strong></p>
+      <p><em>texto en cursiva</em></p>
+      <p><em>tambien cursiva</em></p>
+      <p><code>codigo monoespaciado</code></p>
+      <p><del>texto tachado</del></p>
+      <p><a href="#">un link</a></p>
+      <p style="color:var(--text2);font-size:.8rem">![imagen] → inserta una imagen desde URL</p>
+    </div>
+  </div>
+</div>
 </div>
 
+<!-- ENCABEZADOS -->
 <div class="card">
-<h3>Encabezados</h3>
-<p>Los encabezados <code>#</code> generan entradas en el indice lateral de Colab.</p>
-<div class="code-wrap">
-<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre># Titulo H1     → genera entrada en indice lateral
+<h3>Encabezados — generan el indice lateral de Colab</h3>
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre># Titulo H1
 ## Subtitulo H2
 ### Sub-subtitulo H3</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered">
+      <h1>Titulo H1</h1>
+      <h2>Subtitulo H2</h2>
+      <h3>Sub-subtitulo H3</h3>
+    </div>
+  </div>
 </div>
 </div>
 
+<!-- LISTAS -->
 <div class="card">
-<h3>Listas</h3>
-<div class="code-wrap">
-<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre>Ordenada:
+<h3>Listas ordenadas, no ordenadas y blockquotes</h3>
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre>Ordenada (todos con 1.):
 1. Primero
-1. Segundo   ← puedes poner 1. en todas, Markdown numera solo
+1. Segundo
+1. Tercero
 
 No ordenada:
 * item uno
 * item dos
-- tambien funciona con guion
+- tambien con guion
 
-Indentacion:
-&gt;Un nivel de indentacion
-&gt;&gt;Dos niveles de indentacion</pre>
+Blockquote (indentacion):
+&gt;Un nivel
+&gt;&gt;Dos niveles</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered">
+      <p style="font-size:.78rem;color:var(--text2);margin-bottom:4px">Ordenada:</p>
+      <ol><li>Primero</li><li>Segundo</li><li>Tercero</li></ol>
+      <p style="font-size:.78rem;color:var(--text2);margin:8px 0 4px">No ordenada:</p>
+      <ul><li>item uno</li><li>item dos</li><li>tambien con guion</li></ul>
+      <p style="font-size:.78rem;color:var(--text2);margin:8px 0 4px">Blockquote:</p>
+      <blockquote>Un nivel
+        <blockquote>Dos niveles</blockquote>
+      </blockquote>
+    </div>
+  </div>
 </div>
 </div>
 
+<!-- BLOQUES DE CODIGO -->
 <div class="card">
 <h3>Bloques de codigo</h3>
-<div class="code-wrap">
-<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre>```python
-print("hola mundo")
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre>```python
+import pandas as pd
+df = pd.read_csv("datos.csv")
+print(df.head())
 ```</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered">
+      <pre><code>import pandas as pd
+df = pd.read_csv("datos.csv")
+print(df.head())</code></pre>
+    </div>
+  </div>
 </div>
 </div>
 
+<!-- TABLAS -->
 <div class="card">
 <h3>Tablas</h3>
-<div class="code-wrap">
-<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre>Columna 1 | Columna 2
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre>Columna 1 | Columna 2
 ----------|----------
 Valor A   | Valor B
 Valor C   | Valor D</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered">
+      <table>
+        <tr><th>Columna 1</th><th>Columna 2</th></tr>
+        <tr><td>Valor A</td><td>Valor B</td></tr>
+        <tr><td>Valor C</td><td>Valor D</td></tr>
+      </table>
+    </div>
+  </div>
 </div>
 </div>
 
+<!-- ECUACIONES LATEX -->
 <div class="card">
-<h3>Ecuaciones LaTeX</h3>
-<div class="code-wrap">
-<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre>$y = x^2$
+<h3>Ecuaciones LaTeX (MathJax)</h3>
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre>$y = x^2$
+
 $e^{i\pi} + 1 = 0$
-$\frac{n!}{k!(n-k)!} = {n \choose k}$</pre>
+
+$\frac{n!}{k!(n-k)!} = {n \choose k}$
+
+$e^x=\sum_{i=0}^\infty \frac{1}{i!}x^i$</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered" style="line-height:2.2">
+      <p>$y = x^2$</p>
+      <p>$e^{i\pi} + 1 = 0$</p>
+      <p>$\frac{n!}{k!(n-k)!} = {n \choose k}$</p>
+      <p>$e^x=\sum_{i=0}^\infty \frac{1}{i!}x^i$</p>
+    </div>
+  </div>
 </div>
 </div>
 
+<!-- SEPARADOR HORIZONTAL -->
 <div class="card">
 <h3>Separador horizontal</h3>
-<div class="code-wrap">
-<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
-<pre>---</pre>
+<div class="md-split">
+  <div class="md-split-code">
+    <div class="code-wrap">
+      <div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+      <pre>Texto antes del separador
+
+---
+
+Texto despues del separador</pre>
+    </div>
+  </div>
+  <div class="md-split-preview">
+    <div class="md-split-label">Renderizado</div>
+    <div class="md-rendered">
+      <p>Texto antes del separador</p>
+      <hr>
+      <p>Texto despues del separador</p>
+    </div>
+  </div>
 </div>
 </div>
 
+<!-- DIFERENCIAS COLAB -->
 <div class="card">
 <h3>Diferencias con otros dialectos Markdown</h3>
 <ul>
   <li>Colab usa <strong>marked.js</strong> (similar pero no identico a GitHub/Jupyter)</li>
-  <li>Soporta ecuaciones <strong>MathJax/LaTeX</strong> como Jupyter</li>
-  <li><strong>NO permite HTML</strong> dentro del Markdown</li>
+  <li>Soporta ecuaciones <strong>MathJax/LaTeX</strong> con <code>$...$</code> para inline y <code>$$...$$</code> para bloque</li>
+  <li><strong>NO permite HTML</strong> dentro del Markdown en celdas de texto</li>
   <li><strong>NO soporta emojis de GitHub ni checkboxes</strong> (to-do lists)</li>
 </ul>
 </div>
@@ -1416,6 +1619,26 @@ searchInput.addEventListener('input', function() {
 
     sec.classList.toggle('visible', hasVisible);
   });
+});
+
+// Live Markdown editor
+function renderMdEditor() {
+  const input = document.getElementById('mdEditorInput');
+  const preview = document.getElementById('mdEditorPreview');
+  if (!input || !preview || typeof marked === 'undefined') return;
+  preview.innerHTML = marked.parse(input.value);
+  if (window.MathJax) MathJax.typesetPromise([preview]).catch(() => {});
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('mdEditorInput');
+  if (input) {
+    renderMdEditor();
+    let debounce;
+    input.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(renderMdEditor, 120);
+    });
+  }
 });
 
 // Live code value update — flashes the changed span so it's obvious
