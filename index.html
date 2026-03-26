@@ -264,6 +264,21 @@ pre[contenteditable]:focus{background:var(--surface2)}
   .colab-panel{flex:none;width:100%}
 }
 
+/* ── Run button + output ── */
+.run-btn{background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.run-btn:hover{background:var(--accent);color:#fff}
+.run-btn:disabled{opacity:.5;cursor:not-allowed}
+.code-output{background:var(--code-bg);border-top:1px solid var(--border);padding:10px 14px;font-size:12.5px;line-height:1.6;overflow-x:auto;min-height:28px}
+.code-output.has-error{border-top-color:var(--red)}
+.py-stdout{color:var(--text);margin:0;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.py-stderr{color:var(--red);margin:0;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.py-ok{color:var(--green);font-size:12px;font-family:'JetBrains Mono',monospace}
+.py-loading{color:var(--text2);font-style:italic;font-size:12px;font-family:'JetBrains Mono',monospace}
+.py-df{overflow-x:auto}
+.py-df table{border-collapse:collapse;font-size:12px;margin-top:4px}
+.py-df th,.py-df td{border:1px solid var(--border);padding:3px 8px;text-align:left;color:var(--text)}
+.py-df th{background:var(--surface2);color:var(--accent)}
+
 /* ── SIDE PANEL ── */
 #sidePanelToggle{
   position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:200;
@@ -1724,37 +1739,150 @@ searchInput.addEventListener('input', function() {
   });
 });
 
-// ── Editable code blocks + Reset button ──
+// ── Pyodide lazy loader ──
+let _pyodide = null, _pyLoading = false, _pyQueue = [];
+async function getPyodide() {
+  if (_pyodide) return _pyodide;
+  if (_pyLoading) return new Promise(r => _pyQueue.push(r));
+  _pyLoading = true;
+  if (!window.loadPyodide) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  _pyodide = await loadPyodide();
+  await _pyodide.loadPackage(['pandas','numpy']);
+  // shared namespace across all cells (like a kernel)
+  await _pyodide.runPythonAsync('_G = {}');
+  _pyLoading = false;
+  _pyQueue.forEach(r => r(_pyodide)); _pyQueue = [];
+  return _pyodide;
+}
+
+function _escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function runPyCode(pre, outputEl, runBtn) {
+  const code = pre.innerText;
+  runBtn.disabled = true;
+  runBtn.innerHTML = '⏳ Cargando…';
+  outputEl.style.display = 'block';
+  outputEl.innerHTML = '<span class="py-loading">Iniciando Python (primera vez ~20 seg)…</span>';
+  try {
+    const py = await getPyodide();
+    runBtn.innerHTML = '⏳ Ejecutando…';
+    outputEl.innerHTML = '<span class="py-loading">Ejecutando…</span>';
+    py.globals.set('_user_code', code);
+    const res = await py.runPythonAsync(`
+import io, sys, contextlib, traceback, ast as _ast
+_out = io.StringIO()
+_err = io.StringIO()
+_html = None
+try:
+    with contextlib.redirect_stdout(_out), contextlib.redirect_stderr(_err):
+        exec(_user_code, _G)
+    try:
+        _tree = _ast.parse(_user_code)
+        if _tree.body and isinstance(_tree.body[-1], _ast.Expr):
+            _v = eval(compile(_ast.Expression(_tree.body[-1].value), '<string>', 'eval'), _G)
+            if _v is not None and hasattr(_v, '_repr_html_'):
+                _html = _v._repr_html_()
+            elif _v is not None and not _out.getvalue():
+                _out.write(repr(_v))
+    except: pass
+except Exception:
+    _err.write(traceback.format_exc())
+[_out.getvalue(), _err.getvalue(), _html]
+`);
+    const [stdout, stderr, htmlOut] = res.toJs();
+    let html = '';
+    if (htmlOut) html += `<div class="py-df">${htmlOut}</div>`;
+    if (stdout) html += `<pre class="py-stdout">${_escHtml(stdout)}</pre>`;
+    if (stderr) html += `<pre class="py-stderr">${_escHtml(stderr)}</pre>`;
+    if (!html) html = '<span class="py-ok">✓ Ejecutado (sin output)</span>';
+    outputEl.innerHTML = html;
+    outputEl.classList.toggle('has-error', !!stderr && !stdout && !htmlOut);
+  } catch(e) {
+    outputEl.innerHTML = `<pre class="py-stderr">${_escHtml(e)}</pre>`;
+  }
+  runBtn.disabled = false;
+  runBtn.innerHTML = '▶ Run';
+}
+
+// ── Editable code blocks + Reset + Run buttons ──
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.code-wrap').forEach(wrap => {
     const pre = wrap.querySelector('pre');
     const header = wrap.querySelector('.code-header');
     if (!pre || !header) return;
 
+    const langSpan = header.querySelector('span');
+    const lang = langSpan ? langSpan.textContent.trim().toLowerCase() : '';
+
     // Make editable
     pre.contentEditable = 'true';
     pre.spellcheck = false;
     pre.dataset.orig = pre.innerHTML;
 
-    // Strip HTML on paste so code stays clean
+    // Strip HTML on paste
     pre.addEventListener('paste', e => {
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData).getData('text/plain');
       document.execCommand('insertText', false, text);
     });
 
-    // Wrap copy btn + new reset btn in a flex container
+    // Live preview for markdown split cards
+    if (lang === 'markdown') {
+      const mdSplit = wrap.closest('.md-split');
+      if (mdSplit) {
+        const previewEl = mdSplit.querySelector('.md-rendered');
+        if (previewEl) {
+          let mdDebounce;
+          pre.addEventListener('input', () => {
+            clearTimeout(mdDebounce);
+            mdDebounce = setTimeout(() => {
+              if (typeof marked !== 'undefined') {
+                previewEl.innerHTML = marked.parse(pre.innerText);
+                if (window.MathJax) MathJax.typesetPromise([previewEl]).catch(()=>{});
+              }
+            }, 150);
+          });
+        }
+      }
+    }
+
+    // Output area (Python only)
+    let outputEl = null;
+    if (lang === 'python') {
+      outputEl = document.createElement('div');
+      outputEl.className = 'code-output';
+      outputEl.style.display = 'none';
+      wrap.appendChild(outputEl);
+    }
+
+    // Buttons
     const copyBtn = header.querySelector('.copy-btn');
+    const btnsDiv = document.createElement('div');
+    btnsDiv.className = 'code-header-btns';
+
+    if (lang === 'python' && outputEl) {
+      const runBtn = document.createElement('button');
+      runBtn.className = 'run-btn';
+      runBtn.innerHTML = '▶ Run';
+      runBtn.onclick = () => runPyCode(pre, outputEl, runBtn);
+      btnsDiv.appendChild(runBtn);
+    }
+
     const resetBtn = document.createElement('button');
     resetBtn.className = 'reset-btn';
     resetBtn.title = 'Restaurar codigo original';
     resetBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset';
-    resetBtn.onclick = () => {
-      pre.innerHTML = pre.dataset.orig;
-    };
+    resetBtn.onclick = () => { pre.innerHTML = pre.dataset.orig; };
 
-    const btnsDiv = document.createElement('div');
-    btnsDiv.className = 'code-header-btns';
     btnsDiv.appendChild(resetBtn);
     btnsDiv.appendChild(copyBtn);
     header.appendChild(btnsDiv);
@@ -1819,71 +1947,6 @@ themeToggle.addEventListener('click', () => {
   localStorage.setItem('theme', next);
 });
 
-// ── Side Panel ──
-(function(){
-  const panel = document.getElementById('sidePanel');
-  const toggle = document.getElementById('sidePanelToggle');
-  const closeBtn = document.getElementById('spClose');
-  const tabs = document.querySelectorAll('.sp-tab');
-  const panes = document.querySelectorAll('.sp-pane');
-  const editorInput = document.getElementById('spEditorInput');
-  const editorPreview = document.getElementById('spEditorPreview');
-  const notesArea = document.getElementById('spNotes');
-  const clearBtn = document.getElementById('spClear');
-
-  // Restore saved content
-  const savedMd = localStorage.getItem('sp_md');
-  const savedNotes = localStorage.getItem('sp_notes');
-  if (savedMd !== null) editorInput.value = savedMd;
-  if (savedNotes !== null) notesArea.value = savedNotes;
-
-  function renderSpEditor() {
-    if (typeof marked === 'undefined') return;
-    editorPreview.innerHTML = marked.parse(editorInput.value);
-    if (window.MathJax) MathJax.typesetPromise([editorPreview]).catch(()=>{});
-  }
-
-  function openPanel() {
-    panel.classList.add('open');
-    document.body.classList.add('panel-open');
-    renderSpEditor();
-  }
-  function closePanel() {
-    panel.classList.remove('open');
-    document.body.classList.remove('panel-open');
-  }
-
-  toggle.addEventListener('click', () => {
-    panel.classList.contains('open') ? closePanel() : openPanel();
-  });
-  closeBtn.addEventListener('click', closePanel);
-
-  // Tab switching
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      panes.forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById('sp-pane-' + tab.dataset.pane).classList.add('active');
-    });
-  });
-
-  // Live preview + autosave
-  editorInput.addEventListener('input', () => {
-    renderSpEditor();
-    localStorage.setItem('sp_md', editorInput.value);
-  });
-  notesArea.addEventListener('input', () => {
-    localStorage.setItem('sp_notes', notesArea.value);
-  });
-
-  clearBtn.addEventListener('click', () => {
-    editorInput.value = '';
-    editorPreview.innerHTML = '';
-    localStorage.removeItem('sp_md');
-  });
-})();
-
 // Smooth scroll for nav pills
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
@@ -1942,6 +2005,72 @@ $y = x^2$
     </div>
   </div>
 </div>
+
+<script>
+// ── Side Panel (must run after panel HTML is in DOM) ──
+(function(){
+  const panel = document.getElementById('sidePanel');
+  const toggle = document.getElementById('sidePanelToggle');
+  const closeBtn = document.getElementById('spClose');
+  const tabs = document.querySelectorAll('.sp-tab');
+  const panes = document.querySelectorAll('.sp-pane');
+  const editorInput = document.getElementById('spEditorInput');
+  const editorPreview = document.getElementById('spEditorPreview');
+  const notesArea = document.getElementById('spNotes');
+  const clearBtn = document.getElementById('spClear');
+
+  const savedMd = localStorage.getItem('sp_md');
+  const savedNotes = localStorage.getItem('sp_notes');
+  if (savedMd !== null) editorInput.value = savedMd;
+  if (savedNotes !== null) notesArea.value = savedNotes;
+
+  function renderSpEditor() {
+    if (typeof marked === 'undefined') return;
+    editorPreview.innerHTML = marked.parse(editorInput.value);
+    if (window.MathJax) MathJax.typesetPromise([editorPreview]).catch(()=>{});
+  }
+  function openPanel() {
+    panel.classList.add('open');
+    document.body.classList.add('panel-open');
+    renderSpEditor();
+  }
+  function closePanel() {
+    panel.classList.remove('open');
+    document.body.classList.remove('panel-open');
+  }
+
+  toggle.addEventListener('click', () => {
+    panel.classList.contains('open') ? closePanel() : openPanel();
+  });
+  closeBtn.addEventListener('click', closePanel);
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('sp-pane-' + tab.dataset.pane).classList.add('active');
+    });
+  });
+
+  let spDebounce;
+  editorInput.addEventListener('input', () => {
+    clearTimeout(spDebounce);
+    spDebounce = setTimeout(() => {
+      renderSpEditor();
+      localStorage.setItem('sp_md', editorInput.value);
+    }, 100);
+  });
+  notesArea.addEventListener('input', () => {
+    localStorage.setItem('sp_notes', notesArea.value);
+  });
+  clearBtn.addEventListener('click', () => {
+    editorInput.value = '';
+    editorPreview.innerHTML = '';
+    localStorage.removeItem('sp_md');
+  });
+})();
+</script>
 
 <!--
   COMO SUBIR A VERCEL:
