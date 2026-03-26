@@ -218,6 +218,14 @@ footer a{color:var(--accent);text-decoration:none}
   .md-split-code{flex:none;width:100%;border-right:none;border-bottom:1px solid var(--border)}
 }
 
+/* Editable code blocks */
+pre[contenteditable]{outline:none;cursor:text;caret-color:var(--accent)}
+pre[contenteditable]:focus{background:var(--surface2)}
+.code-wrap:focus-within{border-color:var(--accent)}
+.code-header-btns{display:flex;gap:6px;align-items:center}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;gap:4px}
+.reset-btn:hover{border-color:var(--orange);color:var(--orange)}
+
 /* Syntax highlighting — respects theme via CSS vars */
 .kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.cm{color:var(--cm);font-style:italic}.fn{color:var(--fn)}.op{color:var(--op)}.bi{color:var(--bi)}
 
@@ -1618,6 +1626,43 @@ searchInput.addEventListener('input', function() {
     if (titleText.includes(query) || descText.includes(query)) hasVisible = true;
 
     sec.classList.toggle('visible', hasVisible);
+  });
+});
+
+// ── Editable code blocks + Reset button ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.code-wrap').forEach(wrap => {
+    const pre = wrap.querySelector('pre');
+    const header = wrap.querySelector('.code-header');
+    if (!pre || !header) return;
+
+    // Make editable
+    pre.contentEditable = 'true';
+    pre.spellcheck = false;
+    pre.dataset.orig = pre.innerHTML;
+
+    // Strip HTML on paste so code stays clean
+    pre.addEventListener('paste', e => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
+    });
+
+    // Wrap copy btn + new reset btn in a flex container
+    const copyBtn = header.querySelector('.copy-btn');
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'reset-btn';
+    resetBtn.title = 'Restaurar codigo original';
+    resetBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset';
+    resetBtn.onclick = () => {
+      pre.innerHTML = pre.dataset.orig;
+    };
+
+    const btnsDiv = document.createElement('div');
+    btnsDiv.className = 'code-header-btns';
+    btnsDiv.appendChild(resetBtn);
+    btnsDiv.appendChild(copyBtn);
+    header.appendChild(btnsDiv);
   });
 });
 
