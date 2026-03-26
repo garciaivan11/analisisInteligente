@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Estudio · Analisis de Datos</title>
+<meta property="og:title" content="Guia de Estudio · Analisis de Datos">
+<meta property="og:description" content="Markdown, Forms de Colab y Pandas completo — ICI 2145">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐼</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c2129;--border:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--accent2:#1f6feb;
+  --green:#3fb950;--orange:#d29922;--red:#f85149;--purple:#bc8cff;
+  --radius:8px;--code-bg:#0d1117;
+}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+
+/* Header */
+header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1200px;margin:0 auto;padding:12px 20px}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{font-size:1.1rem;font-weight:700;color:var(--text);white-space:nowrap}
+.logo span{color:var(--accent)}
+.search-box{position:relative;flex:0 1 320px;min-width:200px}
+.search-box input{width:100%;padding:8px 12px 8px 36px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.875rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text2);width:16px;height:16px}
+.nav-pills{display:flex;gap:4px;padding:8px 0 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nav-pills::-webkit-scrollbar{display:none}
+.nav-pills a{white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:500;color:var(--text2);text-decoration:none;transition:all .2s;border:1px solid transparent;flex-shrink:0}
+.nav-pills a:hover{color:var(--text);background:var(--surface)}
+.nav-pills a.active{color:#fff;background:var(--accent2);border-color:var(--accent)}
+
+/* Main */
+main{max-width:1200px;margin:0 auto;padding:110px 20px 60px}
+.section{margin-bottom:60px;display:none}
+.section.visible{display:block}
+.section-title{font-size:1.75rem;font-weight:700;margin-bottom:8px;color:var(--text);display:flex;align-items:center;gap:12px}
+.section-title .badge{font-size:.75rem;padding:4px 10px;border-radius:12px;background:var(--accent2);color:#fff;font-weight:600}
+.section-desc{color:var(--text2);margin-bottom:24px;font-size:.95rem}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;transition:border-color .2s}
+.card:hover{border-color:var(--accent)}
+.card h3{font-size:1.15rem;font-weight:600;margin-bottom:12px;color:var(--accent)}
+.card h4{font-size:1rem;font-weight:600;margin-bottom:8px;color:var(--text)}
+.card p,.card li{color:var(--text);font-size:.9rem;line-height:1.75}
+.card ul,.card ol{padding-left:20px;margin:8px 0}
+.card li{margin-bottom:4px}
+.card .note{background:rgba(88,166,255,.08);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.875rem}
+.card .warning{background:rgba(248,81,73,.08);border-left:3px solid var(--red);padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:.875rem}
+.card .warning::before{content:"⚠️ ";font-size:1rem}
+
+/* Grid for small cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:20px}
+.card-grid .card{margin-bottom:0}
+
+/* Code blocks */
+.code-wrap{position:relative;margin:12px 0;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.75rem;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.copy-btn{background:none;border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;gap:4px}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn.copied{border-color:var(--green);color:var(--green)}
+pre{margin:0;padding:16px;overflow-x:auto;background:var(--code-bg);font-family:'JetBrains Mono',monospace;font-size:.825rem;line-height:1.6;color:var(--text)}
+code{font-family:'JetBrains Mono',monospace;font-size:.85em}
+p code,li code,td code{background:rgba(88,166,255,.1);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:.825em}
+
+/* Tables */
+.table-wrap{overflow-x:auto;margin:12px 0;border-radius:6px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(88,166,255,.03)}
+
+/* Accordion / Quiz */
+.quiz-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:border-color .2s}
+.quiz-item:hover{border-color:var(--accent)}
+.quiz-q{padding:16px 20px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;user-select:none}
+.quiz-q:hover{background:var(--surface2)}
+.quiz-num{background:var(--accent2);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0}
+.quiz-q-text{flex:1;font-size:.925rem;font-weight:500;padding-top:3px}
+.quiz-arrow{color:var(--text2);transition:transform .3s;flex-shrink:0;margin-top:4px}
+.quiz-item.open .quiz-arrow{transform:rotate(180deg)}
+.quiz-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+.quiz-item.open .quiz-a{max-height:600px}
+.quiz-a-inner{padding:0 20px 16px 60px;font-size:.875rem;color:var(--green);line-height:1.7}
+.quiz-a-inner code{color:var(--accent);background:rgba(88,166,255,.1);padding:2px 6px;border-radius:4px}
+
+/* Cheatsheet table */
+.cheat-cat{font-size:1rem;font-weight:700;color:var(--accent);margin:20px 0 8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.cheat-cat:first-child{margin-top:0}
+
+/* Search results highlight */
+.highlight{background:rgba(88,166,255,.25);border-radius:2px;padding:0 2px}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results svg{width:48px;height:48px;margin-bottom:16px;opacity:.5}
+.no-results p{font-size:1.1rem}
+
+/* Footer */
+footer{text-align:center;padding:40px 20px;border-top:1px solid var(--border);color:var(--text2);font-size:.8rem}
+footer a{color:var(--accent);text-decoration:none}
+
+/* Tag */
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;margin:0 2px}
+.tag-py{background:rgba(63,185,80,.15);color:var(--green)}
+.tag-md{background:rgba(188,140,255,.15);color:var(--purple)}
+.tag-colab{background:rgba(210,153,34,.15);color:var(--orange)}
+.tag-pandas{background:rgba(88,166,255,.15);color:var(--accent)}
+
+/* Responsive */
+@media(max-width:768px){
+  .header-top{flex-direction:column;align-items:stretch}
+  .search-box{flex:1;min-width:0}
+  main{padding:140px 16px 40px}
+  .card{padding:18px}
+  .section-title{font-size:1.4rem}
+  .card-grid{grid-template-columns:1fr}
+  .quiz-a-inner{padding-left:20px}
+  table{font-size:.78rem}
+  th,td{padding:8px 10px}
+}
+
+/* Syntax highlighting basic */
+.kw{color:#ff7b72}.str{color:#a5d6ff}.num{color:#79c0ff}.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#ff7b72}.bi{color:#ffa657}
+</style>
+</head>
+<body>
+
+<header>
+<div class="header-inner">
+  <div class="header-top">
+    <div class="logo">Analisis de Datos <span>· Guia de Estudio</span></div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Buscar contenido..." autocomplete="off">
+    </div>
+  </div>
+  <nav class="nav-pills" id="navPills">
+    <a href="#sec-intro" data-sec="sec-intro">Intro</a>
+    <a href="#sec-markdown" data-sec="sec-markdown">Markdown</a>
+    <a href="#sec-forms" data-sec="sec-forms">Forms</a>
+    <a href="#sec-series-df" data-sec="sec-series-df">Series y DataFrame</a>
+    <a href="#sec-seleccion" data-sec="sec-seleccion">Seleccion</a>
+    <a href="#sec-filtros" data-sec="sec-filtros">Filtros y Ops</a>
+    <a href="#sec-limpieza" data-sec="sec-limpieza">Limpieza</a>
+    <a href="#sec-caso" data-sec="sec-caso">Caso Cafe</a>
+    <a href="#sec-cheat" data-sec="sec-cheat">Cheat Sheet</a>
+    <a href="#sec-quiz" data-sec="sec-quiz">Quiz</a>
+  </nav>
+</div>
+</header>
+
+<main id="mainContent">
+
+<!-- ==================== SECCION 0: INTRO ==================== -->
+<section class="section visible" id="sec-intro">
+<h2 class="section-title"><span class="badge">Clase 1</span> Conceptos Base</h2>
+<p class="section-desc">Introduccion al analisis de datos, Python y Google Colab.</p>
+
+<div class="card">
+<h3>¿Que es el analisis de datos?</h3>
+<p>Proceso de inspeccionar, limpiar, transformar y modelar datos con el objetivo de descubrir informacion util, llegar a conclusiones y apoyar la toma de decisiones.</p>
+</div>
+
+<div class="card">
+<h3>Etapas del proceso de analisis</h3>
+<ol>
+  <li><strong>Recoleccion de datos</strong> — obtener datos de diversas fuentes</li>
+  <li><strong>Limpieza y preparacion</strong> — manejar nulos, duplicados, tipos incorrectos</li>
+  <li><strong>Exploracion y analisis</strong> — explorar patrones, tendencias, relaciones</li>
+  <li><strong>Visualizacion</strong> — representar graficamente los hallazgos</li>
+  <li><strong>Interpretacion y conclusiones</strong> — extraer insights accionables</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>¿Por que Python para analisis de datos?</h3>
+<ul>
+  <li>Amplia variedad de librerias especializadas</li>
+  <li>Facil de aprender y usar</li>
+  <li>Comunidad activa y soporte</li>
+  <li>Versatilidad y escalabilidad</li>
+  <li>Codigo abierto y gratuito</li>
+  <li>Integracion con otras tecnologias</li>
+  <li>Soporte para automatizacion</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Librerias principales de Python</h3>
+<h4>Limpieza y manejo de datos:</h4>
+<ul>
+  <li><strong>NumPy</strong> — calculos numericos, algebra lineal, arrays multidimensionales</li>
+  <li><strong>Pandas</strong> — manipulacion y analisis de datos tabulares con DataFrames</li>
+</ul>
+<h4 style="margin-top:12px">Visualizacion:</h4>
+<ul>
+  <li><strong>Matplotlib</strong> — graficos basicos y personalizados, alto control visual</li>
+  <li><strong>Seaborn</strong> — graficos estadisticos esteticos, basado en Matplotlib</li>
+  <li><strong>plotnine (ggplot)</strong> — gramatica de graficos, visualizaciones complejas declarativas</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>¿Que es Google Colab?</h3>
+<p>Entorno de notebooks en la nube basado en Jupyter. Permite ejecutar Python sin instalacion local. Tiene dos tipos de celdas:</p>
+<ul>
+  <li><strong>Celdas de codigo</strong> — ejecutan Python</li>
+  <li><strong>Celdas de texto</strong> — usan Markdown para formatear documentacion</li>
+</ul>
+<div class="note">Doble clic en una celda de texto para ver el fuente Markdown. Hay una toolbar de edicion visible al editar.</div>
+</div>
+</section>
+
+<!-- ==================== SECCION 1: MARKDOWN ==================== -->
+<section class="section visible" id="sec-markdown">
+<h2 class="section-title"><span class="badge">Clase 1</span> Markdown en Google Colab</h2>
+<p class="section-desc">Lenguaje de formato ligero para celdas de texto en Colab.</p>
+
+<div class="card">
+<h3>Formato de texto</h3>
+<div class="table-wrap"><table>
+<tr><th>Sintaxis</th><th>Resultado</th></tr>
+<tr><td><code>**texto**</code></td><td><strong>negrita</strong></td></tr>
+<tr><td><code>*texto*</code> o <code>_texto_</code></td><td><em>cursiva</em></td></tr>
+<tr><td><code>`codigo`</code></td><td><code>monoespaciado</code></td></tr>
+<tr><td><code>~~texto~~</code></td><td><s>tachado</s></td></tr>
+<tr><td><code>[link](https://url.com)</code></td><td>hipervínculo</td></tr>
+<tr><td><code>![imagen](url)</code></td><td>imagen embebida</td></tr>
+</table></div>
+</div>
+
+<div class="card">
+<h3>Encabezados</h3>
+<p>Los encabezados <code>#</code> generan entradas en el indice lateral de Colab.</p>
+<div class="code-wrap">
+<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre># Titulo H1     → genera entrada en indice lateral
+## Subtitulo H2
+### Sub-subtitulo H3</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Listas</h3>
+<div class="code-wrap">
+<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>Ordenada:
+1. Primero
+1. Segundo   ← puedes poner 1. en todas, Markdown numera solo
+
+No ordenada:
+* item uno
+* item dos
+- tambien funciona con guion
+
+Indentacion:
+&gt;Un nivel de indentacion
+&gt;&gt;Dos niveles de indentacion</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Bloques de codigo</h3>
+<div class="code-wrap">
+<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>```python
+print("hola mundo")
+```</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Tablas</h3>
+<div class="code-wrap">
+<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>Columna 1 | Columna 2
+----------|----------
+Valor A   | Valor B
+Valor C   | Valor D</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Ecuaciones LaTeX</h3>
+<div class="code-wrap">
+<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>$y = x^2$
+$e^{i\pi} + 1 = 0$
+$\frac{n!}{k!(n-k)!} = {n \choose k}$</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Separador horizontal</h3>
+<div class="code-wrap">
+<div class="code-header"><span>markdown</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>---</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Diferencias con otros dialectos Markdown</h3>
+<ul>
+  <li>Colab usa <strong>marked.js</strong> (similar pero no identico a GitHub/Jupyter)</li>
+  <li>Soporta ecuaciones <strong>MathJax/LaTeX</strong> como Jupyter</li>
+  <li><strong>NO permite HTML</strong> dentro del Markdown</li>
+  <li><strong>NO soporta emojis de GitHub ni checkboxes</strong> (to-do lists)</li>
+</ul>
+</div>
+</section>
+
+<!-- ==================== SECCION 2: FORMS ==================== -->
+<section class="section visible" id="sec-forms">
+<h2 class="section-title"><span class="badge">Clase 1</span> Forms en Google Colab</h2>
+<p class="section-desc">Controles visuales interactivos para parametrizar codigo.</p>
+
+<div class="card">
+<h3>¿Que son los Forms?</h3>
+<p>Permiten parametrizar codigo con controles visuales interactivos. Se insertan desde <strong>Insert → Add form field</strong> en una celda de codigo. Al cambiar el valor del control, cambia la variable automaticamente.</p>
+<div class="note">Sintaxis general: <code>variable = valor_default  # @param {type:"tipo"}</code></div>
+</div>
+
+<div class="card">
+<h3>Tipo: String</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title String fields</span>
+
+text = <span class="str">''</span>  <span class="cm"># @param {type:"string"}</span>
+dropdown = <span class="str">'1st option'</span>  <span class="cm"># @param ["1st option", "2nd option", "3rd option"]</span>
+text_and_dropdown = <span class="str">'value'</span>  <span class="cm"># @param ["1st option", "2nd option"] {allow-input: true}</span>
+<span class="cm"># allow-input: true → permite escribir valor personalizado ademas de elegir</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Tipo: Number</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title Number fields</span>
+
+number_input = <span class="num">10.0</span>   <span class="cm"># @param {type:"number"}</span>
+number_slider = <span class="num">0.2</span>   <span class="cm"># @param {type:"slider", min:-1, max:1, step:0.1}</span>
+integer_input = <span class="num">10</span>    <span class="cm"># @param {type:"integer"}</span>
+integer_slider = <span class="num">52</span>   <span class="cm"># @param {type:"slider", min:0, max:100, step:1}</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Tipo: Date</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title Date fields</span>
+
+date_input = <span class="str">'2018-02-21'</span>  <span class="cm"># @param {type:"date"}</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Tipo: Boolean</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title Boolean fields</span>
+
+boolean_checkbox = <span class="kw">True</span>   <span class="cm"># @param {type:"boolean"}</span>
+boolean_dropdown = <span class="kw">True</span>   <span class="cm"># @param ["False", "True"] {type:"raw"}</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Tipo: Raw (cualquier expresion Python)</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title Raw fields</span>
+
+raw_input = <span class="kw">None</span>      <span class="cm"># @param {type:"raw"}</span>
+raw_dropdown = <span class="kw">None</span>   <span class="cm"># @param [1, "raw_input", "False", "'string'"] {type:"raw"}</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Markdown dentro de un Form</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title ## Titulo con Markdown</span>
+<span class="cm"># @markdown Puedes escribir texto Markdown aqui.</span>
+<span class="cm"># @markdown ---</span>
+<span class="cm"># @markdown ### Ingresa un valor:</span>
+file_path = <span class="str">""</span>  <span class="cm"># @param {type:"string"}</span>
+<span class="cm"># @markdown ---</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Ejecucion automatica y ocultar codigo</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># @title { run: "auto" }</span>
+option = <span class="str">"B"</span>  <span class="cm"># @param ["A", "B", "C"]</span>
+<span class="fn">print</span>(<span class="str">'You selected'</span>, option)
+<span class="cm"># Se ejecuta automaticamente cada vez que cambias la seleccion</span></pre>
+</div>
+<div class="note"><strong>Ocultar codigo:</strong> View → Show/hide code. Tambien desde el toolbar sobre la celda. Puedes ver: solo el form, solo el codigo, o ambos.</div>
+</div>
+
+<div class="card">
+<h3>Jupyter Widgets (interactividad avanzada)</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="kw">import</span> ipywidgets <span class="kw">as</span> widgets
+<span class="kw">from</span> IPython.display <span class="kw">import</span> display
+
+<span class="cm"># Boton</span>
+button = widgets.<span class="fn">Button</span>(description=<span class="str">"Click Me!"</span>)
+output = widgets.<span class="fn">Output</span>()
+
+<span class="kw">def</span> <span class="fn">on_button_clicked</span>(b):
+    <span class="kw">with</span> output:
+        <span class="fn">print</span>(<span class="str">"Button clicked."</span>)
+
+button.<span class="fn">on_click</span>(on_button_clicked)
+<span class="fn">display</span>(button, output)
+
+<span class="cm"># Slider</span>
+slider = widgets.<span class="fn">IntSlider</span>(value=<span class="num">5</span>, max=<span class="num">10</span>)
+<span class="fn">display</span>(slider)
+slider.value  <span class="cm"># accede al valor actual</span></pre>
+</div>
+</div>
+</section>
+
+<!-- ==================== SECCION 3: SERIES Y DATAFRAME ==================== -->
+<section class="section visible" id="sec-series-df">
+<h2 class="section-title"><span class="badge">Clase 2</span> Pandas — Series y DataFrame</h2>
+<p class="section-desc">Estructuras fundamentales de datos en Pandas.</p>
+
+<div class="card">
+<h3>Importar Pandas y NumPy</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>pd.Series() — Serie unidimensional</h3>
+<p>Estructura similar a un array de una sola dimension. Cada elemento tiene un indice asociado.</p>
+<p><strong>Sintaxis:</strong> <code>pd.Series(data, index=index)</code></p>
+<ul>
+  <li><code>data</code>: lista, array de NumPy, diccionario o escalar</li>
+  <li><code>index</code>: (opcional) lista de etiquetas para los indices</li>
+</ul>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Serie basica (indice automatico 0, 1, 2...)</span>
+serie = pd.<span class="fn">Series</span>([<span class="num">1</span>, <span class="num">3</span>, <span class="num">-4</span>, <span class="num">7</span>])
+
+<span class="cm"># Serie con indice personalizado (la diferencia clave con numpy arrays)</span>
+serie = pd.<span class="fn">Series</span>([<span class="num">1</span>, <span class="num">3</span>, <span class="num">-4</span>, <span class="num">7</span>], index=[<span class="str">'d'</span>, <span class="str">'c'</span>, <span class="str">'b'</span>, <span class="str">'a'</span>])
+
+<span class="cm"># Serie desde diccionario</span>
+serie = pd.<span class="fn">Series</span>({<span class="str">'a'</span>: <span class="num">1</span>, <span class="str">'b'</span>: <span class="num">2</span>, <span class="str">'c'</span>: <span class="num">3</span>})</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>pd.DataFrame() — Estructura tabular</h3>
+<p>Estructura bidimensional con filas y columnas etiquetadas.</p>
+<p><strong>Sintaxis:</strong> <code>pd.DataFrame(data, columns=col, index=idx)</code></p>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Desde diccionario (la forma mas comun)</span>
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="str">'Nombre'</span>: [<span class="str">'Ana'</span>, <span class="str">'Luis'</span>, <span class="str">'Maria'</span>],
+    <span class="str">'Edad'</span>: [<span class="num">23</span>, <span class="num">25</span>, <span class="num">22</span>],
+    <span class="str">'Ciudad'</span>: [<span class="str">'Santiago'</span>, <span class="str">'Valparaiso'</span>, <span class="str">'Concepcion'</span>]
+})
+
+<span class="cm"># Desde lista de listas</span>
+df = pd.<span class="fn">DataFrame</span>(
+    [[<span class="str">'Ana'</span>, <span class="num">23</span>], [<span class="str">'Luis'</span>, <span class="num">25</span>]],
+    columns=[<span class="str">'Nombre'</span>, <span class="str">'Edad'</span>]
+)</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Cargar datos externos</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Desde CSV</span>
+data = pd.<span class="fn">read_csv</span>(<span class="str">"archivo.csv"</span>)
+
+<span class="cm"># Desde Excel</span>
+data = pd.<span class="fn">read_excel</span>(<span class="str">"archivo.xlsx"</span>)
+
+<span class="cm"># Desde JSON</span>
+data = pd.<span class="fn">read_json</span>(<span class="str">"archivo.json"</span>)
+
+<span class="cm"># Montar Google Drive en Colab primero:</span>
+<span class="kw">from</span> google.colab <span class="kw">import</span> drive
+drive.<span class="fn">mount</span>(<span class="str">'/content/drive'</span>)</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Dataset de ejemplo — Starbucks (starbucks.csv)</h3>
+<p>77 filas, 7 columnas:</p>
+<div class="table-wrap"><table>
+<tr><th>Columna</th><th>Tipo</th><th>Descripcion</th></tr>
+<tr><td><code>item</code></td><td>string</td><td>Nombre del producto</td></tr>
+<tr><td><code>calories</code></td><td>int</td><td>Calorias</td></tr>
+<tr><td><code>fat</code></td><td>float</td><td>Grasa en gramos</td></tr>
+<tr><td><code>carb</code></td><td>int</td><td>Carbohidratos</td></tr>
+<tr><td><code>fiber</code></td><td>int</td><td>Fibra</td></tr>
+<tr><td><code>protein</code></td><td>int</td><td>Proteinas</td></tr>
+<tr><td><code>type</code></td><td>category</td><td>bakery, bistro box, hot breakfast, lunch, parfait, petite, salad, sandwich, snack, yogurt</td></tr>
+</table></div>
+</div>
+</section>
+
+<!-- ==================== SECCION 4: SELECCION ==================== -->
+<section class="section visible" id="sec-seleccion">
+<h2 class="section-title"><span class="badge">Clase 2</span> Exploracion y Seleccion</h2>
+<p class="section-desc">Metodos para explorar y seleccionar datos en DataFrames.</p>
+
+<div class="card">
+<h3>Metodos de exploracion basica</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.<span class="fn">head</span>(<span class="num">5</span>)       <span class="cm"># primeras 5 filas (n por defecto)</span>
+data.<span class="fn">tail</span>(<span class="num">5</span>)       <span class="cm"># ultimas 5 filas</span>
+data.shape         <span class="cm"># tupla (filas, columnas) — ATRIBUTO sin ()</span>
+data.columns       <span class="cm"># nombres de todas las columnas</span>
+data.index         <span class="cm"># indices del DataFrame</span>
+data.<span class="fn">info</span>()        <span class="cm"># estructura: tipos de dato y valores no nulos</span>
+data.<span class="fn">describe</span>()    <span class="cm"># resumen estadistico: count, mean, std, min, 25%, 50%, 75%, max</span>
+data.dtypes        <span class="cm"># tipo de dato de cada columna</span></pre>
+</div>
+<div class="warning"><code>.shape</code> es un ATRIBUTO (sin parentesis). <code>.info()</code> y <code>.describe()</code> son METODOS (con parentesis).</div>
+</div>
+
+<div class="card">
+<h3>Seleccion de columnas</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data[<span class="str">"columna"</span>]              <span class="cm"># una columna → retorna Series</span>
+data[[<span class="str">"col1"</span>, <span class="str">"col2"</span>]]       <span class="cm"># multiples columnas → retorna DataFrame</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Seleccion por posicion — .iloc[] (Integer Location)</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.iloc[<span class="num">0</span>]           <span class="cm"># primera fila (todas las columnas)</span>
+data.iloc[<span class="num">0</span>, <span class="num">1</span>]        <span class="cm"># fila 0, columna 1 (un valor)</span>
+data.iloc[<span class="num">0</span>:<span class="num">3</span>, <span class="num">1</span>:<span class="num">4</span>]    <span class="cm"># filas 0-2, columnas 1-3 (slicing)</span>
+data.iloc[[<span class="num">0</span>, <span class="num">2</span>], :]   <span class="cm"># filas 0 y 2, todas las columnas</span>
+data.iloc[:, <span class="num">1</span>]        <span class="cm"># todas las filas, columna 1</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Seleccion por etiqueta — .loc[] (Label Location)</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.loc[<span class="num">0</span>]                        <span class="cm"># fila con indice 0</span>
+data.loc[<span class="num">0</span>, <span class="str">"Nombre"</span>]              <span class="cm"># fila 0, columna "Nombre"</span>
+data.loc[<span class="num">0</span>:<span class="num">2</span>, [<span class="str">"Nombre"</span>, <span class="str">"Edad"</span>]]  <span class="cm"># filas 0-2, columnas especificas</span>
+data.loc[[<span class="num">0</span>, <span class="num">2</span>], :]               <span class="cm"># filas 0 y 2</span>
+data.loc[:, <span class="str">"Edad"</span>]               <span class="cm"># columna "Edad" completa</span>
+data.loc[data[<span class="str">"Edad"</span>] > <span class="num">25</span>]       <span class="cm"># filas donde Edad > 25 (filtro con loc)</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Acceso a un valor unico — .at[] y .iat[]</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.at[<span class="num">0</span>, <span class="str">"Nombre"</span>]    <span class="cm"># por etiqueta — mas rapido que .loc para un solo valor</span>
+data.iat[<span class="num">0</span>, <span class="num">1</span>]          <span class="cm"># por posicion — mas rapido que .iloc para un solo valor</span></pre>
+</div>
+</div>
+</section>
+
+<!-- ==================== SECCION 5: FILTROS Y OPERACIONES ==================== -->
+<section class="section visible" id="sec-filtros">
+<h2 class="section-title"><span class="badge">Clase 2-3</span> Filtros y Operaciones</h2>
+<p class="section-desc">Filtrado, ordenamiento y agregacion de datos.</p>
+
+<div class="card">
+<h3>Filtros simples</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Por igualdad</span>
+filtro = data[<span class="str">"Location"</span>] == <span class="str">'In-store'</span>
+data[filtro]
+
+<span class="cm"># Por condicion numerica</span>
+filtro = data[<span class="str">"Total Spent"</span>] > <span class="num">15</span>
+data[filtro]
+
+<span class="cm"># Por fecha</span>
+filtro = data[<span class="str">"Transaction Date"</span>] == <span class="str">'2023-07-15'</span>
+data[filtro]</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Filtros con dos condiciones</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># AND — ambas deben cumplirse (usar &amp; y parentesis)</span>
+filtro = (data[<span class="str">"Location"</span>] == <span class="str">'Takeaway'</span>) <span class="op">&amp;</span> (data[<span class="str">"Payment Method"</span>] == <span class="str">'Credit Card'</span>)
+data[filtro]
+
+<span class="cm"># OR — al menos una se cumple (usar |)</span>
+filtro = (data[<span class="str">"Location"</span>] == <span class="str">'In-store'</span>) <span class="op">|</span> (data[<span class="str">"Location"</span>] == <span class="str">'Takeaway'</span>)
+data[filtro]</pre>
+</div>
+<div class="warning">Cada condicion entre parentesis. Usar <code>&amp;</code> y <code>|</code> (NO <code>and</code> / <code>or</code>)</div>
+</div>
+
+<div class="card">
+<h3>Filtro con .isin() — valores en una lista</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data[data[<span class="str">"Nombre"</span>].<span class="fn">isin</span>([<span class="str">"Ana"</span>, <span class="str">"Carlos"</span>, <span class="str">"Maria"</span>])]
+data[data[<span class="str">"tipo"</span>].<span class="fn">isin</span>([<span class="str">"bakery"</span>, <span class="str">"salad"</span>])]</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Ordenamiento</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.<span class="fn">sort_values</span>(by=<span class="str">'Total Spent'</span>, ascending=<span class="kw">False</span>)   <span class="cm"># mayor a menor</span>
+data.<span class="fn">sort_values</span>(by=<span class="str">'Quantity'</span>, ascending=<span class="kw">True</span>)        <span class="cm"># menor a mayor</span>
+
+<span class="cm"># Multiples columnas</span>
+data.<span class="fn">sort_values</span>(by=[<span class="str">'Edad'</span>, <span class="str">'Nombre'</span>], ascending=[<span class="kw">True</span>, <span class="kw">False</span>])
+
+<span class="cm"># Por indice</span>
+data.<span class="fn">sort_index</span>(ascending=<span class="kw">True</span>)</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Metodos de agregacion</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data[<span class="str">"Total Spent"</span>].<span class="fn">sum</span>()          <span class="cm"># suma total</span>
+data[<span class="str">"Total Spent"</span>].<span class="fn">mean</span>()         <span class="cm"># promedio</span>
+data[<span class="str">"Total Spent"</span>].<span class="fn">min</span>()          <span class="cm"># minimo</span>
+data[<span class="str">"Total Spent"</span>].<span class="fn">max</span>()          <span class="cm"># maximo</span>
+data[<span class="str">"Total Spent"</span>].<span class="fn">count</span>()        <span class="cm"># conteo de no-nulos</span>
+data[<span class="str">"Payment Method"</span>].<span class="fn">unique</span>()    <span class="cm"># array de valores unicos</span>
+data[<span class="str">"Payment Method"</span>].<span class="fn">value_counts</span>()  <span class="cm"># conteo de cada valor unico</span>
+data.<span class="fn">describe</span>()                    <span class="cm"># resumen estadistico completo</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>groupby() — agrupar y agregar</h3>
+<p>Patron: <code>data.groupby('columna_cat')['columna_valor'].funcion()</code></p>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Total por metodo de pago</span>
+data.<span class="fn">groupby</span>(<span class="str">'Payment Method'</span>)[<span class="str">'Total Spent'</span>].<span class="fn">sum</span>()
+
+<span class="cm"># Numero de transacciones por ubicacion</span>
+data.<span class="fn">groupby</span>(<span class="str">'Location'</span>)[<span class="str">'Transaction ID'</span>].<span class="fn">count</span>()
+
+<span class="cm"># Gasto promedio por ubicacion</span>
+data.<span class="fn">groupby</span>(<span class="str">'Location'</span>)[<span class="str">'Total Spent'</span>].<span class="fn">mean</span>()
+
+<span class="cm"># Cantidad total vendida por producto</span>
+data.<span class="fn">groupby</span>(<span class="str">'Item'</span>)[<span class="str">'Quantity'</span>].<span class="fn">sum</span>()
+
+<span class="cm"># Varias funciones a la vez con .agg()</span>
+data.<span class="fn">groupby</span>(<span class="str">'Sexo'</span>).<span class="fn">agg</span>({<span class="str">'Edad'</span>: <span class="str">'mean'</span>, <span class="str">'Salario'</span>: <span class="str">'sum'</span>})</pre>
+</div>
+</div>
+</section>
+
+<!-- ==================== SECCION 6: LIMPIEZA ==================== -->
+<section class="section visible" id="sec-limpieza">
+<h2 class="section-title"><span class="badge">Clase 3</span> Limpieza de Datos</h2>
+<p class="section-desc">Manejo de nulos, conversion de tipos, transformaciones y merge.</p>
+
+<div class="card">
+<h3>Manejo de valores nulos</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.<span class="fn">isnull</span>()              <span class="cm"># mascara booleana True donde hay NaN</span>
+data.<span class="fn">notnull</span>()             <span class="cm"># inverso: True donde NO hay NaN</span>
+data.<span class="fn">isnull</span>().<span class="fn">any</span>()        <span class="cm"># columnas que tienen al menos un nulo</span>
+data.<span class="fn">isnull</span>().<span class="fn">sum</span>()        <span class="cm"># cantidad de nulos por columna</span>
+
+data.<span class="fn">dropna</span>()                          <span class="cm"># elimina filas con cualquier NaN</span>
+data.<span class="fn">dropna</span>(subset=[<span class="str">"columna"</span>])        <span class="cm"># elimina solo si NaN en esa columna</span>
+data[<span class="str">"Col"</span>].<span class="fn">fillna</span>(data[<span class="str">"Col"</span>].<span class="fn">mean</span>()) <span class="cm"># rellena NaN con el promedio</span>
+data[<span class="str">"Col"</span>].<span class="fn">fillna</span>(<span class="str">"DESCONOCIDO"</span>)      <span class="cm"># rellena NaN con texto</span>
+data.<span class="fn">fillna</span>(<span class="num">0</span>)                         <span class="cm"># rellena todos los NaN con 0</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Conversion de tipos de dato</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Convertir a numero (errors='coerce' → valores invalidos se vuelven NaN)</span>
+data[<span class="str">"Total Spent"</span>] = pd.<span class="fn">to_numeric</span>(data[<span class="str">"Total Spent"</span>], errors=<span class="str">'coerce'</span>)
+data[<span class="str">"Quantity"</span>] = pd.<span class="fn">to_numeric</span>(data[<span class="str">"Quantity"</span>], errors=<span class="str">'coerce'</span>)
+
+<span class="cm"># Convertir a fecha</span>
+data[<span class="str">"Fecha"</span>] = pd.<span class="fn">to_datetime</span>(data[<span class="str">"Fecha"</span>], errors=<span class="str">'coerce'</span>)
+
+<span class="cm"># Convertir con astype</span>
+data[<span class="str">"Edad"</span>] = data[<span class="str">"Edad"</span>].<span class="fn">astype</span>(<span class="bi">float</span>)
+data[<span class="str">"Edad"</span>] = data[<span class="str">"Edad"</span>].<span class="fn">astype</span>(<span class="bi">int</span>)
+data[<span class="str">"Categoria"</span>] = data[<span class="str">"Categoria"</span>].<span class="fn">astype</span>(<span class="bi">str</span>)</pre>
+</div>
+<div class="note">El dataset <code>dirty_cafe_sales.csv</code> tiene columnas numericas guardadas como texto (object). Por eso hay que convertirlas antes de operar.</div>
+</div>
+
+<div class="card">
+<h3>Agregar columna nueva</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data[<span class="str">"Descuento"</span>] = data[<span class="str">"Total Spent"</span>] * <span class="num">0.10</span>
+data[<span class="str">"Categoria"</span>] = np.<span class="fn">where</span>(data[<span class="str">"Total Spent"</span>] > <span class="num">15</span>, <span class="str">"Alto"</span>, <span class="str">"Normal"</span>)</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>np.where() — operacion condicional</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Si condicion → A, si no → B</span>
+np.<span class="fn">where</span>(df[<span class="str">'Edad'</span>] >= <span class="num">18</span>, <span class="str">'Adulto'</span>, <span class="str">'Menor'</span>)
+np.<span class="fn">where</span>(df[<span class="str">'col'</span>] > x, <span class="str">'alto'</span>, <span class="str">'bajo'</span>)</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Agregar filas y eliminar duplicados</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Agregar filas</span>
+nueva_fila = pd.<span class="fn">DataFrame</span>([{<span class="str">"Col1"</span>: <span class="str">"valor"</span>, <span class="str">"Col2"</span>: <span class="num">10</span>}])
+data = pd.<span class="fn">concat</span>([data, nueva_fila], ignore_index=<span class="kw">True</span>)
+
+<span class="cm"># Eliminar duplicados</span>
+data.<span class="fn">drop_duplicates</span>()                    <span class="cm"># filas 100% duplicadas</span>
+data.<span class="fn">drop_duplicates</span>(subset=[<span class="str">"columna"</span>])  <span class="cm"># duplicados en una columna</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Eliminar y renombrar columnas</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># Eliminar columna</span>
+<span class="kw">del</span> data[<span class="str">"columna"</span>]
+data.<span class="fn">drop</span>(columns=[<span class="str">"columna"</span>])
+
+<span class="cm"># Renombrar columnas</span>
+data.<span class="fn">rename</span>(columns={<span class="str">'old_name'</span>: <span class="str">'new_name'</span>, <span class="str">'Col1'</span>: <span class="str">'Columna_1'</span>})
+
+<span class="cm"># Copiar DataFrame (copia independiente)</span>
+data2 = data.<span class="fn">copy</span>()</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Resetear y establecer indice</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre>data.<span class="fn">reset_index</span>()              <span class="cm"># mueve indice a columna</span>
+data.<span class="fn">reset_index</span>(drop=<span class="kw">True</span>)     <span class="cm"># reinicia sin conservar indice anterior</span>
+data.<span class="fn">reset_index</span>(inplace=<span class="kw">True</span>)  <span class="cm"># modifica el DataFrame original</span>
+data.<span class="fn">set_index</span>(<span class="str">'columna'</span>)       <span class="cm"># establece una columna como indice</span></pre>
+</div>
+</div>
+
+<div class="card">
+<h3>Transformar valores con .map() y .apply()</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># .map() → transforma segun un diccionario</span>
+data[<span class="str">'Sexo'</span>] = data[<span class="str">'Sexo'</span>].<span class="fn">map</span>({<span class="str">'M'</span>: <span class="str">'Masculino'</span>, <span class="str">'F'</span>: <span class="str">'Femenino'</span>})
+
+<span class="cm"># .apply() → aplica una funcion a cada elemento</span>
+data[<span class="str">'Longitud'</span>] = data[<span class="str">'Nombre'</span>].<span class="fn">apply</span>(<span class="bi">len</span>)
+data[<span class="str">'Mayuscula'</span>] = data[<span class="str">'Nombre'</span>].<span class="fn">apply</span>(<span class="kw">lambda</span> x: x.<span class="fn">upper</span>())</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>pd.merge() — unir DataFrames</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># inner: solo coincidencias en ambos</span>
+pd.<span class="fn">merge</span>(df1, df2, on=<span class="str">'columna_clave'</span>, how=<span class="str">'inner'</span>)
+
+<span class="cm"># outer: todos los registros de ambos</span>
+pd.<span class="fn">merge</span>(df1, df2, on=<span class="str">'columna_clave'</span>, how=<span class="str">'outer'</span>)
+
+<span class="cm"># left: todos de df1, coincidencias de df2</span>
+pd.<span class="fn">merge</span>(df1, df2, on=<span class="str">'columna_clave'</span>, how=<span class="str">'left'</span>)
+
+<span class="cm"># right: todos de df2, coincidencias de df1</span>
+pd.<span class="fn">merge</span>(df1, df2, on=<span class="str">'columna_clave'</span>, how=<span class="str">'right'</span>)
+
+<span class="cm"># Columnas con nombre diferente en cada df</span>
+pd.<span class="fn">merge</span>(df1, df2, left_on=<span class="str">'codigo'</span>, right_on=<span class="str">'id'</span>, how=<span class="str">'inner'</span>)</pre>
+</div>
+</div>
+</section>
+
+<!-- ==================== SECCION 7: CASO DE ESTUDIO ==================== -->
+<section class="section visible" id="sec-caso">
+<h2 class="section-title"><span class="badge">Clase 3</span> Caso de Estudio — dirty_cafe_sales.csv</h2>
+<p class="section-desc">Cadena de cafeterias en USA. 10,000 filas, 8 columnas. Dataset con datos sucios.</p>
+
+<div class="card">
+<h3>Columnas del dataset</h3>
+<div class="table-wrap"><table>
+<tr><th>Columna</th><th>Descripcion</th><th>Problemas</th></tr>
+<tr><td><code>Transaction ID</code></td><td>Identificador unico</td><td>—</td></tr>
+<tr><td><code>Item</code></td><td>Producto: Coffee, Tea, Juice, Sandwich, Salad, Cookie, Cake, Smoothie</td><td>—</td></tr>
+<tr><td><code>Quantity</code></td><td>Cantidad comprada</td><td>Nulos y texto</td></tr>
+<tr><td><code>Price Per Unit</code></td><td>Precio unitario</td><td>Nulos y texto</td></tr>
+<tr><td><code>Total Spent</code></td><td>Total gastado</td><td>Nulos, "ERROR", "UNKNOWN"</td></tr>
+<tr><td><code>Payment Method</code></td><td>Cash, Credit Card, Digital Wallet</td><td>~2579 nulos</td></tr>
+<tr><td><code>Location</code></td><td>In-store, Takeaway</td><td>~3265 nulos</td></tr>
+<tr><td><code>Transaction Date</code></td><td>Fecha (YYYY-MM-DD)</td><td>—</td></tr>
+</table></div>
+</div>
+
+<div class="card">
+<h3>Codigo de carga y limpieza</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+data = pd.<span class="fn">read_csv</span>(<span class="str">"dirty_cafe_sales.csv"</span>)
+
+<span class="cm"># Revisar estructura</span>
+data.<span class="fn">info</span>()
+data.<span class="fn">head</span>(<span class="num">10</span>)
+
+<span class="cm"># Convertir columnas numericas</span>
+data[<span class="str">'Total Spent'</span>] = pd.<span class="fn">to_numeric</span>(data[<span class="str">'Total Spent'</span>], errors=<span class="str">'coerce'</span>)
+data[<span class="str">'Quantity'</span>] = pd.<span class="fn">to_numeric</span>(data[<span class="str">'Quantity'</span>], errors=<span class="str">'coerce'</span>)
+data[<span class="str">'Price Per Unit'</span>] = pd.<span class="fn">to_numeric</span>(data[<span class="str">'Price Per Unit'</span>], errors=<span class="str">'coerce'</span>)
+
+<span class="cm"># Verificar nulos</span>
+data.<span class="fn">isnull</span>().<span class="fn">sum</span>()</pre>
+</div>
+</div>
+
+<div class="card">
+<h3>16 Objetivos del analisis — Respuestas completas</h3>
+<div class="code-wrap">
+<div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
+<pre><span class="cm"># 1. Resumen estadistico</span>
+data.<span class="fn">describe</span>()
+
+<span class="cm"># 2. Total de dinero gastado</span>
+data[<span class="str">"Total Spent"</span>].<span class="fn">sum</span>()
+
+<span class="cm"># 3. Promedio de gasto por transaccion</span>
+data[<span class="str">"Total Spent"</span>].<span class="fn">mean</span>()
+
+<span class="cm"># 4. Metodos de pago disponibles</span>
+data[<span class="str">"Payment Method"</span>].<span class="fn">unique</span>()
+
+<span class="cm"># 5. Transacciones por metodo de pago</span>
+data[<span class="str">"Payment Method"</span>].<span class="fn">value_counts</span>()
+
+<span class="cm"># 6. Transacciones en "In-store"</span>
+filtro = data[<span class="str">"Location"</span>] == <span class="str">'In-store'</span>
+data[filtro]
+
+<span class="cm"># 7. Transacciones con gasto > $15</span>
+filtro = data[<span class="str">"Total Spent"</span>] > <span class="num">15</span>
+data[filtro]
+
+<span class="cm"># 8. Takeaway con Credit Card</span>
+filtro = (data[<span class="str">"Location"</span>] == <span class="str">'Takeaway'</span>) <span class="op">&amp;</span> (data[<span class="str">"Payment Method"</span>] == <span class="str">'Credit Card'</span>)
+data[filtro]
+
+<span class="cm"># 9. Transacciones en efectivo (Cash)</span>
+filtro = data[<span class="str">"Payment Method"</span>] == <span class="str">'Cash'</span>
+data[filtro]
+
+<span class="cm"># 10. Transacciones del dia 2023-07-15</span>
+filtro = data[<span class="str">"Transaction Date"</span>] == <span class="str">'2023-07-15'</span>
+data[filtro]
+
+<span class="cm"># 11. Ordenar de mayor a menor gasto</span>
+data.<span class="fn">sort_values</span>(by=<span class="str">'Total Spent'</span>, ascending=<span class="kw">False</span>)
+
+<span class="cm"># 12. Ordenar por cantidad (ascendente)</span>
+data.<span class="fn">sort_values</span>(by=<span class="str">'Quantity'</span>, ascending=<span class="kw">True</span>)
+
+<span class="cm"># 13. Total gastado por metodo de pago</span>
+data.<span class="fn">groupby</span>(<span class="str">'Payment Method'</span>)[<span class="str">'Total Spent'</span>].<span class="fn">sum</span>()
+
+<span class="cm"># 14. Transacciones por location</span>
+data.<span class="fn">groupby</span>(<span class="str">'Location'</span>)[<span class="str">'Transaction ID'</span>].<span class="fn">count</span>()
+
+<span class="cm"># 15. Gasto promedio por location</span>
+data.<span class="fn">groupby</span>(<span class="str">'Location'</span>)[<span class="str">'Total Spent'</span>].<span class="fn">mean</span>()
+
+<span class="cm"># 16. Articulos vendidos por tipo de producto</span>
+data[<span class="str">'Quantity'</span>] = pd.<span class="fn">to_numeric</span>(data[<span class="str">'Quantity'</span>], errors=<span class="str">'coerce'</span>)
+data.<span class="fn">groupby</span>(<span class="str">'Item'</span>)[<span class="str">'Quantity'</span>].<span class="fn">sum</span>()</pre>
+</div>
+</div>
+</section>
+
+<!-- ==================== SECCION 8: CHEAT SHEET ==================== -->
+<section class="section visible" id="sec-cheat">
+<h2 class="section-title"><span class="badge">Referencia</span> Cheat Sheet Pandas</h2>
+<p class="section-desc">Todos los metodos organizados por categoria.</p>
+
+<div class="card" style="overflow-x:auto">
+
+<h4 class="cheat-cat">Creacion de estructuras</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>pd.Series(data, index=idx)</code></td><td>Crea serie unidimensional</td><td><code>pd.Series([1,3,-4,7], index=['a','b','c','d'])</code></td></tr>
+<tr><td><code>pd.DataFrame(data)</code></td><td>Crea tabla bidimensional</td><td><code>pd.DataFrame({'Nombre':['Ana'],'Edad':[23]})</code></td></tr>
+<tr><td><code>pd.read_csv('archivo.csv')</code></td><td>Lee archivo CSV</td><td><code>df = pd.read_csv('datos.csv')</code></td></tr>
+<tr><td><code>pd.read_excel('archivo.xlsx')</code></td><td>Lee archivo Excel</td><td><code>df = pd.read_excel('datos.xlsx')</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Exploracion</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>.head(n)</code></td><td>Primeras n filas</td><td><code>df.head(3)</code></td></tr>
+<tr><td><code>.tail(n)</code></td><td>Ultimas n filas</td><td><code>df.tail(3)</code></td></tr>
+<tr><td><code>.shape</code></td><td>Tupla (filas, cols) — atributo</td><td><code>filas, cols = df.shape</code></td></tr>
+<tr><td><code>.columns</code></td><td>Nombres de columnas</td><td><code>print(df.columns)</code></td></tr>
+<tr><td><code>.index</code></td><td>Indices del DataFrame</td><td><code>print(df.index)</code></td></tr>
+<tr><td><code>.info()</code></td><td>Tipos de dato y nulos</td><td><code>df.info()</code></td></tr>
+<tr><td><code>.describe()</code></td><td>Resumen estadistico</td><td><code>df.describe()</code></td></tr>
+<tr><td><code>.dtypes</code></td><td>Tipos de todas las columnas</td><td><code>print(df.dtypes)</code></td></tr>
+<tr><td><code>df['col'].dtype</code></td><td>Tipo de una columna</td><td><code>df['Edad'].dtype</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Seleccion</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>df['col']</code></td><td>Una columna (Series)</td><td><code>df['Nombre']</code></td></tr>
+<tr><td><code>df[['c1','c2']]</code></td><td>Multiples columnas</td><td><code>df[['Nombre','Edad']]</code></td></tr>
+<tr><td><code>.iloc[fila, col]</code></td><td>Por posicion numerica</td><td><code>df.iloc[0, 1]</code></td></tr>
+<tr><td><code>.loc[fila, col]</code></td><td>Por etiqueta</td><td><code>df.loc[0, 'Nombre']</code></td></tr>
+<tr><td><code>.at[fila, col]</code></td><td>Un valor por etiqueta (rapido)</td><td><code>df.at[0, 'Nombre']</code></td></tr>
+<tr><td><code>.iat[fila, col]</code></td><td>Un valor por posicion (rapido)</td><td><code>df.iat[0, 1]</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Filtros</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>df[condicion]</code></td><td>Filtro simple</td><td><code>df[df['Edad'] > 24]</code></td></tr>
+<tr><td><code>df[(c1) &amp; (c2)]</code></td><td>AND — ambas condiciones</td><td><code>df[(df['Edad']>24) &amp; (df['Nombre']=='Luis')]</code></td></tr>
+<tr><td><code>df[(c1) | (c2)]</code></td><td>OR — al menos una</td><td><code>df[(df['Edad']&lt;20) | (df['Edad']>60)]</code></td></tr>
+<tr><td><code>.isin([val1, val2])</code></td><td>Esta en lista</td><td><code>df[df['Nombre'].isin(['Ana','Carlos'])]</code></td></tr>
+<tr><td><code>.loc[df['col'] cond]</code></td><td>Filtro con loc</td><td><code>df.loc[df['Edad'] > 25]</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Ordenamiento</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>.sort_values(by='col')</code></td><td>Ordena por columna</td><td><code>df.sort_values(by='Edad', ascending=False)</code></td></tr>
+<tr><td><code>.sort_values(by=[c1,c2])</code></td><td>Ordena por multiples cols</td><td><code>df.sort_values(by=['Edad','Nombre'])</code></td></tr>
+<tr><td><code>.sort_index()</code></td><td>Ordena por indice</td><td><code>df.sort_index()</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Agregacion</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>.sum()</code></td><td>Suma</td><td><code>df['Edad'].sum()</code></td></tr>
+<tr><td><code>.mean()</code></td><td>Promedio</td><td><code>df['Edad'].mean()</code></td></tr>
+<tr><td><code>.min() / .max()</code></td><td>Minimo / Maximo</td><td><code>df['Edad'].min()</code></td></tr>
+<tr><td><code>.count()</code></td><td>Conteo no-nulos</td><td><code>df['Edad'].count()</code></td></tr>
+<tr><td><code>.unique()</code></td><td>Valores unicos</td><td><code>df['Tipo'].unique()</code></td></tr>
+<tr><td><code>.value_counts()</code></td><td>Frecuencia de valores unicos</td><td><code>df['Tipo'].value_counts()</code></td></tr>
+<tr><td><code>.groupby('col')</code></td><td>Agrupa por columna</td><td><code>df.groupby('Sexo')['Edad'].mean()</code></td></tr>
+<tr><td><code>.agg({'col': 'func'})</code></td><td>Multiples funciones</td><td><code>df.groupby('Sexo').agg({'Edad': 'mean'})</code></td></tr>
+<tr><td><code>pd.crosstab(c1, c2)</code></td><td>Tabla de contingencia</td><td><code>pd.crosstab(df['Sexo'], df['Sobreviviente'])</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Limpieza</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>.isnull()</code></td><td>Mascara de nulos</td><td><code>df['col'].isnull()</code></td></tr>
+<tr><td><code>.notnull()</code></td><td>Mascara de no-nulos</td><td><code>df[df['col'].notnull()]</code></td></tr>
+<tr><td><code>.dropna()</code></td><td>Elimina filas con NaN</td><td><code>df.dropna(subset=['col'])</code></td></tr>
+<tr><td><code>.fillna(val)</code></td><td>Rellena NaN</td><td><code>df.fillna(0)</code></td></tr>
+<tr><td><code>pd.to_numeric(col, errors='coerce')</code></td><td>Convierte a numero</td><td><code>pd.to_numeric(df['Total'], errors='coerce')</code></td></tr>
+<tr><td><code>pd.to_datetime(col)</code></td><td>Convierte a fecha</td><td><code>pd.to_datetime(df['Fecha'])</code></td></tr>
+<tr><td><code>.astype(tipo)</code></td><td>Cambia tipo de dato</td><td><code>df['Edad'].astype(float)</code></td></tr>
+<tr><td><code>.drop_duplicates()</code></td><td>Elimina duplicados</td><td><code>df.drop_duplicates()</code></td></tr>
+<tr><td><code>.rename(columns={})</code></td><td>Renombra columnas</td><td><code>df.rename(columns={'old':'new'})</code></td></tr>
+<tr><td><code>.copy()</code></td><td>Copia el DataFrame</td><td><code>df2 = df.copy()</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Transformacion</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>.map(diccionario)</code></td><td>Transforma segun dict</td><td><code>df['Sexo'].map({'M':'Masculino'})</code></td></tr>
+<tr><td><code>.apply(func)</code></td><td>Aplica funcion</td><td><code>df['Nombre'].apply(len)</code></td></tr>
+<tr><td><code>np.where(cond, A, B)</code></td><td>Condicional vectorizado</td><td><code>np.where(df['Edad']>=18,'Adulto','Menor')</code></td></tr>
+<tr><td><code>pd.cut(col, bins)</code></td><td>Agrupa en intervalos</td><td><code>pd.cut(df['Edad'], bins=[0,18,65,100])</code></td></tr>
+<tr><td><code>.reset_index()</code></td><td>Reinicia indice</td><td><code>df.reset_index(drop=True)</code></td></tr>
+<tr><td><code>.set_index('col')</code></td><td>Columna como indice</td><td><code>df.set_index('Nombre')</code></td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Merge / Union</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>pd.merge(df1, df2, on='col', how='inner')</code></td><td>Inner join</td><td>Solo coincidencias en ambos</td></tr>
+<tr><td><code>pd.merge(..., how='outer')</code></td><td>Outer join</td><td>Todos de ambos DataFrames</td></tr>
+<tr><td><code>pd.merge(..., how='left')</code></td><td>Left join</td><td>Todos de df1</td></tr>
+<tr><td><code>pd.merge(..., how='right')</code></td><td>Right join</td><td>Todos de df2</td></tr>
+<tr><td><code>pd.merge(df1, df2, left_on='a', right_on='b')</code></td><td>Columnas distintas</td><td>Une por nombres diferentes</td></tr>
+</table></div>
+
+<h4 class="cheat-cat">Exportar</h4>
+<div class="table-wrap"><table>
+<tr><th>Metodo</th><th>Descripcion</th><th>Ejemplo</th></tr>
+<tr><td><code>df.to_excel('archivo.xlsx', index=False)</code></td><td>Exporta a Excel</td><td><code>df.to_excel('datos.xlsx', index=False)</code></td></tr>
+<tr><td><code>df.to_csv('archivo.csv', index=False)</code></td><td>Exporta a CSV</td><td><code>df.to_csv('datos.csv')</code></td></tr>
+</table></div>
+
+</div>
+</section>
+
+<!-- ==================== SECCION 9: QUIZ ==================== -->
+<section class="section visible" id="sec-quiz">
+<h2 class="section-title"><span class="badge">15 preguntas</span> Simulacro de Quiz</h2>
+<p class="section-desc">Haz clic en cada pregunta para revelar la respuesta.</p>
+
+<div id="quizContainer">
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">1</span><span class="quiz-q-text">¿Como se escribe un titulo de nivel 2 en Markdown?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>## Mi titulo</code> — dos signos <code>#</code> seguidos del texto.</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">2</span><span class="quiz-q-text">¿Como pones texto en negrita y cursiva en Markdown?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner">Negrita: <code>**texto**</code> | Cursiva: <code>*texto*</code> o <code>_texto_</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">3</span><span class="quiz-q-text">¿Como creas un dropdown de seleccion en un Form de Colab?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>variable = '1st option' # @param ["1st option", "2nd option", "3rd option"]</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">4</span><span class="quiz-q-text">¿Que hace <code>data.describe()</code>?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner">Entrega resumen estadistico de columnas numericas: count, mean, std, min, 25%, 50% (mediana), 75%, max.</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">5</span><span class="quiz-q-text">¿Cual es la diferencia entre <code>.shape</code> e <code>.info()</code>?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>.shape</code> es atributo (sin parentesis) que retorna tupla (filas, columnas). <code>.info()</code> es metodo que muestra tipos de dato y cantidad de valores no nulos de cada columna.</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">6</span><span class="quiz-q-text">¿Cual es la diferencia entre <code>.iloc[]</code> y <code>.loc[]</code>?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>.iloc[]</code> selecciona por posicion numerica (0, 1, 2...). <code>.loc[]</code> selecciona por etiqueta (nombre del indice o columna).</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">7</span><span class="quiz-q-text">¿Como filtras transacciones donde "Total Spent" es mayor a $15?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>filtro = data["Total Spent"] > 15</code> seguido de <code>data[filtro]</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">8</span><span class="quiz-q-text">¿Como filtras por dos condiciones (Location='Takeaway' Y Payment='Credit Card')?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>filtro = (data["Location"] == 'Takeaway') &amp; (data["Payment Method"] == 'Credit Card')</code> — cada condicion entre parentesis, usar <code>&amp;</code> no <code>and</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">9</span><span class="quiz-q-text">¿Como calculas el total gastado por cada metodo de pago?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>data.groupby('Payment Method')['Total Spent'].sum()</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">10</span><span class="quiz-q-text">¿Para que sirve <code>errors='coerce'</code> en <code>pd.to_numeric()</code>?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner">Convierte valores que no se pueden transformar a numero (como "ERROR" o "UNKNOWN") en NaN, en vez de lanzar un error.</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">11</span><span class="quiz-q-text">¿Que hace <code>.value_counts()</code> y cuando lo usas?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner">Cuenta cuantas veces aparece cada valor unico en una columna. Se usa en columnas categoricas como "Payment Method" o "Item" para ver distribucion.</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">12</span><span class="quiz-q-text">¿Como ordenas un DataFrame de mayor a menor por "Quantity"?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>data.sort_values(by='Quantity', ascending=False)</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">13</span><span class="quiz-q-text">¿Como se hace un slider numerico en un Form de Colab?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner"><code>valor = 0.5 # @param {type:"slider", min:0, max:1, step:0.1}</code></div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">14</span><span class="quiz-q-text">¿Cual es la diferencia entre <code>pd.Series()</code> y <code>pd.DataFrame()</code>?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner">Series es unidimensional (una sola columna con indice). DataFrame es bidimensional (tabla con filas y columnas, como una hoja de calculo).</div></div></div>
+
+<div class="quiz-item"><div class="quiz-q" onclick="toggleQuiz(this)"><span class="quiz-num">15</span><span class="quiz-q-text">¿Que hace <code>pd.merge(df1, df2, on='col', how='left')</code>?</span><svg class="quiz-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="quiz-a"><div class="quiz-a-inner">Une df1 y df2 por la columna 'col'. Con how='left': incluye TODOS los registros de df1 y solo los que coinciden de df2 (los que no coinciden quedan con NaN).</div></div></div>
+
+</div>
+</section>
+
+</main>
+
+<footer>
+<p>Analisis Inteligente de Datos · ICI 2145</p>
+</footer>
+
+<script>
+// Copy code functionality
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Copiado';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar';
+    }, 2000);
+  });
+}
+
+// Quiz accordion
+function toggleQuiz(el) {
+  el.closest('.quiz-item').classList.toggle('open');
+}
+
+// Navigation - active section tracking
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-pills a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-pills a[data-sec="${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-100px 0px -60% 0px', threshold: 0 });
+
+sections.forEach(sec => observer.observe(sec));
+
+// Set first nav as active by default
+if (navLinks.length) navLinks[0].classList.add('active');
+
+// Search functionality
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  const allCards = document.querySelectorAll('.card, .quiz-item');
+
+  if (!query) {
+    sections.forEach(s => s.classList.add('visible'));
+    allCards.forEach(c => c.style.display = '');
+    return;
+  }
+
+  sections.forEach(sec => {
+    let hasVisible = false;
+    const cards = sec.querySelectorAll('.card, .quiz-item');
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      if (text.includes(query)) {
+        card.style.display = '';
+        hasVisible = true;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    // Also check section title/desc
+    const titleText = (sec.querySelector('.section-title')?.textContent || '').toLowerCase();
+    const descText = (sec.querySelector('.section-desc')?.textContent || '').toLowerCase();
+    if (titleText.includes(query) || descText.includes(query)) hasVisible = true;
+
+    sec.classList.toggle('visible', hasVisible);
+  });
+});
+
+// Smooth scroll for nav pills
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+      // Clear search when navigating
+      searchInput.value = '';
+      sections.forEach(s => s.classList.add('visible'));
+      document.querySelectorAll('.card, .quiz-item').forEach(c => c.style.display = '');
+    }
+  });
+});
+</script>
+
+<!--
+  COMO SUBIR A VERCEL:
+  1. Ve a vercel.com e inicia sesion
+  2. Clic en "Add New Project"
+  3. Arrastra esta carpeta (o el index.html) al area de deploy
+  4. Vercel genera automaticamente una URL publica para compartir
+  No necesitas configurar nada mas — es un archivo HTML estatico.
+-->
+</body>
+</html>
