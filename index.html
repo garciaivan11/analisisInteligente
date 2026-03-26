@@ -400,7 +400,7 @@ $\frac{n!}{k!(n-k)!} = {n \choose k}$</pre>
 <!-- ==================== SECCION 2: FORMS ==================== -->
 <section class="section visible" id="sec-forms">
 <h2 class="section-title"><span class="badge">Clase 1</span> Forms en Google Colab</h2>
-<p class="section-desc">Controles visuales interactivos para parametrizar codigo. Codigo a la izquierda, control real a la derecha — igual que en Colab.</p>
+<p class="section-desc">Controles visuales interactivos. Al cambiar cualquier control, el valor en el codigo de la izquierda se actualiza en tiempo real.</p>
 
 <div class="card">
 <h3>¿Que son los Forms?</h3>
@@ -417,20 +417,22 @@ $\frac{n!}{k!(n-k)!} = {n \choose k}$</pre>
       <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
       <pre><span class="cm"># @title String fields</span>
 
-text = <span class="str">''</span>  <span class="cm"># @param {type:"string"}</span>
-dropdown = <span class="str">'1st option'</span>  <span class="cm"># @param ["1st option", "2nd option", "3rd option"]</span>
-text_and_dropdown = <span class="str">'value'</span>  <span class="cm"># @param ["1st option", "2nd option"] {allow-input: true}</span></pre>
+text = <span class="str" id="cv-text">''</span>  <span class="cm"># @param {type:"string"}</span>
+dropdown = <span class="str" id="cv-dropdown">'1st option'</span>  <span class="cm"># @param ["1st option", "2nd option", "3rd option"]</span>
+text_and_dropdown = <span class="str" id="cv-tad">'1st option'</span>  <span class="cm"># @param ["1st option", "2nd option"] {allow-input: true}</span></pre>
     </div>
   </div>
   <div class="colab-panel">
     <div class="colab-panel-title">String fields</div>
     <div class="form-field">
       <label class="form-label">text</label>
-      <input class="form-input" type="text" placeholder="Insertar text aqui">
+      <input class="form-input" type="text" placeholder="Escribe algo..."
+        oninput="cvUpdate('cv-text', &quot;'&quot; + this.value + &quot;'&quot;)">
     </div>
     <div class="form-field">
       <label class="form-label">dropdown</label>
-      <select class="form-select">
+      <select class="form-select"
+        onchange="cvUpdate('cv-dropdown', &quot;'&quot; + this.value + &quot;'&quot;)">
         <option>1st option</option>
         <option>2nd option</option>
         <option>3rd option</option>
@@ -438,7 +440,8 @@ text_and_dropdown = <span class="str">'value'</span>  <span class="cm"># @param 
     </div>
     <div class="form-field">
       <label class="form-label">text_and_dropdown <span style="color:var(--accent);font-size:.7rem">{allow-input: true}</span></label>
-      <input class="form-input" list="text-dd-list" placeholder="1st option">
+      <input class="form-input" list="text-dd-list" value="1st option"
+        oninput="cvUpdate('cv-tad', &quot;'&quot; + this.value + &quot;'&quot;)">
       <datalist id="text-dd-list">
         <option value="1st option">
         <option value="2nd option">
@@ -458,33 +461,37 @@ text_and_dropdown = <span class="str">'value'</span>  <span class="cm"># @param 
       <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
       <pre><span class="cm"># @title Number fields</span>
 
-number_input = <span class="num">10.0</span>   <span class="cm"># @param {type:"number"}</span>
-number_slider = <span class="num">0.2</span>   <span class="cm"># @param {type:"slider", min:-1, max:1, step:0.1}</span>
-integer_input = <span class="num">10</span>    <span class="cm"># @param {type:"integer"}</span>
-integer_slider = <span class="num">52</span>   <span class="cm"># @param {type:"slider", min:0, max:100, step:1}</span></pre>
+number_input = <span class="num" id="cv-num-input">10.0</span>   <span class="cm"># @param {type:"number"}</span>
+number_slider = <span class="num" id="cv-num-slider">0.2</span>   <span class="cm"># @param {type:"slider", min:-1, max:1, step:0.1}</span>
+integer_input = <span class="num" id="cv-int-input">10</span>    <span class="cm"># @param {type:"integer"}</span>
+integer_slider = <span class="num" id="cv-int-slider">52</span>   <span class="cm"># @param {type:"slider", min:0, max:100, step:1}</span></pre>
     </div>
   </div>
   <div class="colab-panel">
     <div class="colab-panel-title">Number fields</div>
     <div class="form-field">
       <label class="form-label">number_input</label>
-      <input class="form-input" type="number" value="10.0" step="any">
+      <input class="form-input" type="number" value="10.0" step="any"
+        oninput="cvUpdate('cv-num-input', this.value)">
     </div>
     <div class="form-field">
       <label class="form-label">number_slider <span style="color:var(--text2);font-size:.7rem">min:-1  max:1  step:0.1</span></label>
       <div class="form-range-wrap">
-        <input class="form-range" type="range" min="-1" max="1" step="0.1" value="0.2" oninput="document.getElementById('ns-val').textContent=parseFloat(this.value).toFixed(1)">
+        <input class="form-range" type="range" min="-1" max="1" step="0.1" value="0.2"
+          oninput="const v=parseFloat(this.value).toFixed(1); document.getElementById('ns-val').textContent=v; cvUpdate('cv-num-slider',v)">
         <span class="form-range-val" id="ns-val">0.2</span>
       </div>
     </div>
     <div class="form-field">
       <label class="form-label">integer_input</label>
-      <input class="form-input" type="number" value="10" step="1">
+      <input class="form-input" type="number" value="10" step="1"
+        oninput="cvUpdate('cv-int-input', this.value)">
     </div>
     <div class="form-field">
       <label class="form-label">integer_slider <span style="color:var(--text2);font-size:.7rem">min:0  max:100  step:1</span></label>
       <div class="form-range-wrap">
-        <input class="form-range" type="range" min="0" max="100" step="1" value="52" oninput="document.getElementById('is-val').textContent=this.value">
+        <input class="form-range" type="range" min="0" max="100" step="1" value="52"
+          oninput="document.getElementById('is-val').textContent=this.value; cvUpdate('cv-int-slider',this.value)">
         <span class="form-range-val" id="is-val">52</span>
       </div>
     </div>
@@ -502,14 +509,15 @@ integer_slider = <span class="num">52</span>   <span class="cm"># @param {type:"
       <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
       <pre><span class="cm"># @title Date fields</span>
 
-date_input = <span class="str">'2018-02-21'</span>  <span class="cm"># @param {type:"date"}</span></pre>
+date_input = <span class="str" id="cv-date">'2018-02-21'</span>  <span class="cm"># @param {type:"date"}</span></pre>
     </div>
   </div>
   <div class="colab-panel">
     <div class="colab-panel-title">Date fields</div>
     <div class="form-field">
       <label class="form-label">date_input</label>
-      <input class="form-input" type="date" value="2018-02-21">
+      <input class="form-input" type="date" value="2018-02-21"
+        onchange="cvUpdate('cv-date', &quot;'&quot; + this.value + &quot;'&quot;)">
     </div>
     <button class="hide-code-btn" onclick="toggleColabCode('code-date', this)">Ocultar codigo</button>
   </div>
@@ -525,8 +533,8 @@ date_input = <span class="str">'2018-02-21'</span>  <span class="cm"># @param {t
       <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
       <pre><span class="cm"># @title Boolean fields</span>
 
-boolean_checkbox = <span class="kw">True</span>   <span class="cm"># @param {type:"boolean"}</span>
-boolean_dropdown = <span class="kw">True</span>   <span class="cm"># @param ["False", "True"] {type:"raw"}</span></pre>
+boolean_checkbox = <span class="kw" id="cv-boolcheck">True</span>   <span class="cm"># @param {type:"boolean"}</span>
+boolean_dropdown = <span class="kw" id="cv-booldrop">True</span>   <span class="cm"># @param ["False", "True"] {type:"raw"}</span></pre>
     </div>
   </div>
   <div class="colab-panel">
@@ -534,13 +542,15 @@ boolean_dropdown = <span class="kw">True</span>   <span class="cm"># @param ["Fa
     <div class="form-field">
       <label class="form-label">boolean_checkbox</label>
       <div class="form-checkbox-wrap">
-        <input class="form-checkbox" type="checkbox" id="bool-check" checked>
+        <input class="form-checkbox" type="checkbox" id="bool-check" checked
+          onchange="cvUpdate('cv-boolcheck', this.checked ? 'True' : 'False')">
         <label for="bool-check" style="font-size:.83rem;color:var(--text);cursor:pointer">boolean_checkbox</label>
       </div>
     </div>
     <div class="form-field">
       <label class="form-label">boolean_dropdown</label>
-      <select class="form-select">
+      <select class="form-select"
+        onchange="cvUpdate('cv-booldrop', this.value)">
         <option>False</option>
         <option selected>True</option>
       </select>
@@ -559,19 +569,21 @@ boolean_dropdown = <span class="kw">True</span>   <span class="cm"># @param ["Fa
       <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
       <pre><span class="cm"># @title Raw fields</span>
 
-raw_input = <span class="kw">None</span>      <span class="cm"># @param {type:"raw"}</span>
-raw_dropdown = <span class="kw">None</span>   <span class="cm"># @param [1, "raw_input", "False", "'string'"] {type:"raw"}</span></pre>
+raw_input = <span class="kw" id="cv-raw-input">None</span>      <span class="cm"># @param {type:"raw"}</span>
+raw_dropdown = <span class="kw" id="cv-raw-drop">None</span>   <span class="cm"># @param [1, "raw_input", "False", "'string'"] {type:"raw"}</span></pre>
     </div>
   </div>
   <div class="colab-panel">
     <div class="colab-panel-title">Raw fields</div>
     <div class="form-field">
       <label class="form-label">raw_input</label>
-      <input class="form-input" type="text" value="None">
+      <input class="form-input" type="text" value="None"
+        oninput="cvUpdate('cv-raw-input', this.value || 'None')">
     </div>
     <div class="form-field">
       <label class="form-label">raw_dropdown</label>
-      <select class="form-select">
+      <select class="form-select"
+        onchange="cvUpdate('cv-raw-drop', this.value)">
         <option>1</option>
         <option>raw_input</option>
         <option>False</option>
@@ -594,7 +606,7 @@ raw_dropdown = <span class="kw">None</span>   <span class="cm"># @param [1, "raw
 <span class="cm"># @markdown Puedes escribir texto Markdown aqui.</span>
 <span class="cm"># @markdown ---</span>
 <span class="cm"># @markdown ### Ingresa un valor:</span>
-file_path = <span class="str">""</span>  <span class="cm"># @param {type:"string"}</span>
+file_path = <span class="str" id="cv-filepath">""</span>  <span class="cm"># @param {type:"string"}</span>
 <span class="cm"># @markdown ---</span></pre>
     </div>
   </div>
@@ -607,7 +619,8 @@ file_path = <span class="str">""</span>  <span class="cm"># @param {type:"string
       <h3>Ingresa un valor:</h3>
       <div class="form-field">
         <label class="form-label">file_path</label>
-        <input class="form-input" type="text" placeholder="">
+        <input class="form-input" type="text" placeholder="/ruta/al/archivo"
+          oninput="cvUpdate('cv-filepath', '&quot;' + this.value + '&quot;')">
       </div>
       <hr>
     </div>
@@ -624,7 +637,7 @@ file_path = <span class="str">""</span>  <span class="cm"># @param {type:"string
     <div class="code-wrap">
       <div class="code-header"><span>python</span><button class="copy-btn" onclick="copyCode(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div>
       <pre><span class="cm"># @title { run: "auto" }</span>
-option = <span class="str">"B"</span>  <span class="cm"># @param ["A", "B", "C"]</span>
+option = <span class="str" id="cv-option">"B"</span>  <span class="cm"># @param ["A", "B", "C"]</span>
 <span class="fn">print</span>(<span class="str">'You selected'</span>, option)
 <span class="cm"># Se ejecuta automaticamente al cambiar la seleccion</span></pre>
     </div>
@@ -633,7 +646,8 @@ option = <span class="str">"B"</span>  <span class="cm"># @param ["A", "B", "C"]
     <div class="colab-panel-title">{ run: "auto" }</div>
     <div class="form-field">
       <label class="form-label">option</label>
-      <select class="form-select" onchange="document.getElementById('auto-output').textContent='You selected ' + this.value">
+      <select class="form-select"
+        onchange="cvUpdate('cv-option','&quot;'+this.value+'&quot;'); document.getElementById('auto-output').textContent='You selected ' + this.value">
         <option>A</option>
         <option selected>B</option>
         <option>C</option>
@@ -1403,6 +1417,24 @@ searchInput.addEventListener('input', function() {
     sec.classList.toggle('visible', hasVisible);
   });
 });
+
+// Live code value update — flashes the changed span so it's obvious
+function cvUpdate(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = val;
+  el.style.transition = 'none';
+  el.style.background = 'rgba(78,158,255,.35)';
+  el.style.borderRadius = '3px';
+  el.style.padding = '0 2px';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.style.transition = 'background 0.8s ease';
+      el.style.background = 'transparent';
+      setTimeout(() => { el.style.cssText = ''; }, 900);
+    });
+  });
+}
 
 // Colab-style hide/show code toggle
 function toggleColabCode(codeId, btn) {
